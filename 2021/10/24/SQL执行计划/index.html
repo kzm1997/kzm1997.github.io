@@ -16,21 +16,24 @@
   <meta name="description" content="">
   <meta name="author" content="kzm">
   <meta name="keywords" content="">
-  <meta name="description" content="redo日志是啥在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?   我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能">
+  <meta name="description" content="Explain1explain select 1 执行上面sql语句,将得到下面执行计划:   解释一下每个字段的意思:    id  在一个大的查询语句中每个 SELECT 关键字都对应一个唯一的 id select_typ SELECT 关键字对应的那个查询的类型 table 表名  partitions 匹配的分区信息 possible_keys 可能用到的索引 key 实际上使用的索引 k">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redo日志">
-<meta property="og:url" content="http://example.com/2021/10/24/redo%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:title" content="SQL执行计划">
+<meta property="og:url" content="http://example.com/2021/10/24/SQL%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92/index.html">
 <meta property="og:site_name" content="xiaoKouBlog">
-<meta property="og:description" content="redo日志是啥在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?   我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能">
+<meta property="og:description" content="Explain1explain select 1 执行上面sql语句,将得到下面执行计划:   解释一下每个字段的意思:    id  在一个大的查询语句中每个 SELECT 关键字都对应一个唯一的 id select_typ SELECT 关键字对应的那个查询的类型 table 表名  partitions 匹配的分区信息 possible_keys 可能用到的索引 key 实际上使用的索引 k">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png">
-<meta property="article:published_time" content="2021-10-24T04:18:59.000Z">
-<meta property="article:modified_time" content="2021-10-24T07:03:06.185Z">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_17-06-16_1615367395708.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_17-21-17_1615368088190.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_18-00-11_1615370425433.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_21-19-07_1615382364591.png">
+<meta property="article:published_time" content="2021-10-24T07:08:52.000Z">
+<meta property="article:modified_time" content="2021-10-24T07:08:58.594Z">
 <meta property="article:author" content="kzm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png">
+<meta name="twitter:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_17-06-16_1615367395708.png">
   
-  <title>redo日志 - xiaoKouBlog</title>
+  <title>SQL执行计划 - xiaoKouBlog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -164,7 +167,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="redo日志">
+            <span class="h2" id="subtitle" title="SQL执行计划">
               
             </span>
 
@@ -174,7 +177,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-24 12:18" pubdate>
+      <time datetime="2021-10-24 15:08" pubdate>
         October 24, 2021 pm
       </time>
     </span>
@@ -185,7 +188,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      551 字
+      1.7k 字
     </span>
   
 
@@ -194,7 +197,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2 分钟
+      5 分钟
     </span>
   
 
@@ -223,22 +226,48 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">redo日志</h1>
+            <h1 style="display: none">SQL执行计划</h1>
             
             <div class="markdown-body">
-              <h2 id="redo日志是啥"><a href="#redo日志是啥" class="headerlink" title="redo日志是啥"></a>redo日志是啥</h2><p>在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?  </p>
-<p>我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能把这种修改恢复出来,所以没必要在事务提交时就把该事务在内存中修改的页刷新到磁盘,只需要把修改了哪些东西记录一下就好,那么事务对数据亏所做的修改又可以被恢复,所以上述内容也被称为重做日志(redo log)  </p>
-<p>redo日志的好处如下:  </p>
+              <h3 id="Explain"><a href="#Explain" class="headerlink" title="Explain"></a>Explain</h3><figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">explain</span> <span class="hljs-keyword">select</span> <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>执行上面sql语句,将得到下面执行计划:<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_17-06-16_1615367395708.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210310_170616.png">  </p>
+<p>解释一下每个字段的意思:  </p>
 <ul>
-<li>redo日志占用的空间非常小  </li>
-<li>redo日志是顺序写入磁盘,在执行事务的过程中,每执行一条语句,就可能产生若干redo 日志,这些日志是按照顺序产生的顺序写入磁盘的,也就是使用顺序IO  </li>
+<li>id  在一个大的查询语句中每个 SELECT 关键字都对应一个唯一的 id</li>
+<li>select_typ SELECT 关键字对应的那个查询的类型</li>
+<li>table 表名 </li>
+<li>partitions 匹配的分区信息</li>
+<li>possible_keys 可能用到的索引</li>
+<li>key 实际上使用的索引</li>
+<li>key_len 实际使用到的索引长度</li>
+<li>ref  当使用索引列等值查询时，与索引列进行等值匹配的对象信息</li>
+<li>rows 预估的需要读取的记录条数</li>
+<li>filtered 某个表经过搜索条件过滤后剩余记录条数的百分比</li>
+<li>Extra 一些额外的信息 </li>
 </ul>
-<h3 id="redo-日志格式"><a href="#redo-日志格式" class="headerlink" title="redo 日志格式"></a>redo 日志格式</h3><p>redo 日志本质上只是记录了一下事务对数据库做了哪些修改,针对事务对数据库的不同修改场景定义了多种类型的 redo 日志，但是绝大部分类型的 redo 日志都有下边这种通用的结构<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210523_121641.png">  </p>
-<ul>
-<li>type:该条redo日志的类型 </li>
-<li>space ID:表空间ID </li>
-<li>page number: 页号</li>
-<li>data:该条redo日志的具体内容  </li>
+<p>我们看一下连接查询</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">explain</span> select * FROM test<span class="hljs-number">1</span> t<span class="hljs-number">1</span> INNER JOIN test<span class="hljs-number">2</span> t<span class="hljs-number">2</span> <span class="hljs-literal">on</span> t<span class="hljs-number">1</span>.guid=t<span class="hljs-number">2</span>.guid<br></code></pre></td></tr></table></figure>
+<p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_17-21-17_1615368088190.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210310_172117.png">  </p>
+<h5 id="id"><a href="#id" class="headerlink" title="id"></a>id</h5><p>查询语句中每出现一个 SELECT 关键字，MySQL就会为它分配一个唯一的 id值。<br>对于连接查询来说，一个 SELECT 关键字后边的 FROM 子句中可以跟随多个表，所以在连接查询的执行计划中，每个表都会对应一条记录，但是这些记录的id值都是相同的.出现在前边的表表示驱动表，出现在后边的表表示被驱动表  </p>
+<p>对于包含 UNION 子句的查询语句来说，每个 SELECT 关键字对应一个 id 值也是没错的，不过还是有点儿特别的:  </p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">EXPLAIN</span> <span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> single_table s1 <span class="hljs-keyword">WHERE</span> s1.key1 = <span class="hljs-string">&#x27;a&#x27;</span> <span class="hljs-keyword">UNION</span> <span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> single_table s2 <span class="hljs-keyword">WHERE</span> s2.key1 = <span class="hljs-string">&#x27;a&#x27;</span><br></code></pre></td></tr></table></figure>
+<p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_18-00-11_1615370425433.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210310_180011.png"></p>
+<p>UNION字句会把多个查询的结果集合并起来并对结果集中的记录进行去重,怎么去重? 它使用的是内部临时表,正如上边的查询计划中表示,UNION字句是为了把id为1的查询和id为2的查询结果集合并起来并去重,所以在内部创建了一个名为&lt;union1,2&gt;的临时表,跟 UNION 对比起来， UNION ALL 就不需要为最终的结果集进行去重，它只是单纯的把多个查询的结果集中的记录合并成一个并返回给用户，所以也就不需要使用临时表。所以在包含 UNION ALL 子句的查询的执行计划中，就没有那个 id 为 NULL 的记录  </p>
+<h5 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a>select_type</h5><ul>
+<li><p>simple 查询语句中不包含UNION或者子查询的都算做SIMPLE类型,比如单表查询和连接查询.  </p>
+</li>
+<li><p>primary 对于包含UNION,UNION ALL 或者子查询的大查询来说,它是由几个小查询组成的,其中最左边的那个查询的select_type 值就是primary,比方说:  </p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">EXPLAIN</span> <span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> single_table s1 <span class="hljs-keyword">WHERE</span> s1.key1 = <span class="hljs-string">&#x27;a&#x27;</span> <span class="hljs-keyword">UNION</span> <span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> single_table s2 <span class="hljs-keyword">WHERE</span> s2.key1 = <span class="hljs-string">&#x27;a&#x27;</span><br></code></pre></td></tr></table></figure>
+<p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-03-10_21-19-07_1615382364591.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210310_211907.png">  </p>
+</li>
+<li><p>union 对于包含 UNION 或者 UNION ALL 的大查询来说，它是由几个小查询组成的，其中除了最左边的那个小查询以外，其余的小查询的 select_type 值就是 UNION,临时表就是<strong>UNION RESULT</strong> </p>
+</li>
+<li><p>SUBQUERY 如果包含子查询的查询语句不能转为对应的emi-join的形式,并且该子查询是不相关子查询,并且查询优化器决定采用将该子查询物化的方式来执行该子查询时,该子查询的第一个select关键字代表的那个查询的select_type就是SUBQUERY,比如下面的查询:  </p>
+</li>
+<li><p>DEPENDENT SUBQUERY  如果包含子查询的查询语句不能够转为对应的 semi-join 的形式，并且该子查询是相关子查询，则该子查询的第一个 SELECT 关键字代表的那个查询的 select_type 就是 DEPENDENT SUBQUERY,<strong>select_type为DEPENDENT SUBQUERY的查询可能会被执行多次</strong></p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">EXPLAIN SELECT<br>	* <br>FROM<br>	single_table <span class="hljs-built_in">s1</span> <br>WHERE<br>	<span class="hljs-built_in">s1</span>.key1 IN ( SELECT <span class="hljs-built_in">s2</span>.key1 FROM single_table <span class="hljs-built_in">s2</span> WHERE <span class="hljs-built_in">s1</span>.key2 = <span class="hljs-built_in">s2</span>.key2 ) <br>	<span class="hljs-keyword">OR </span><span class="hljs-built_in">s1</span>.key3 = <span class="hljs-string">&#x27;a&#x27;</span><br></code></pre></td></tr></table></figure></li>
+<li><p>DEPENDENT UNION </p>
+</li>
 </ul>
 
             </div>
@@ -267,9 +296,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/24/MVCC/">
+                      <a href="/2021/10/24/Redis%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%B8%8E%E4%BA%8B%E5%8A%A1/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MVCC</span>
+                        <span class="hidden-mobile">Redis慢查询与事务</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -277,8 +306,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/24/post-title/">
-                        <span class="hidden-mobile">post title</span>
+                      <a href="/2021/10/24/SQL-%E8%A1%A8%E8%AE%BF%E9%97%AE%E6%96%B9%E5%BC%8F%E6%8F%AD%E7%A7%98/">
+                        <span class="hidden-mobile">SQL 表访问方式揭秘</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

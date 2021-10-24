@@ -16,21 +16,19 @@
   <meta name="description" content="">
   <meta name="author" content="kzm">
   <meta name="keywords" content="">
-  <meta name="description" content="redo日志是啥在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?   我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能">
+  <meta name="description" content="实现机制当用户第一次访问应用系统1的时候,因为还没有登录,会被引导到认证系统进行登录:根据用户提供的登录信息,认证系统进行身份验证,如果通过校验,应该返回给用户一个认证的凭据—ticket;用户再访问别的应用的时候就会将这个ticket带上,作为自己的凭据,应用系统接收到请求之后会把ticket送到认证系统进行校验,检验ticket的合法性,如果通过校验,用户可以在不用再次登录的情况下访问应用系统">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redo日志">
-<meta property="og:url" content="http://example.com/2021/10/24/redo%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:title" content="SSO">
+<meta property="og:url" content="http://example.com/2021/10/24/SSO/index.html">
 <meta property="og:site_name" content="xiaoKouBlog">
-<meta property="og:description" content="redo日志是啥在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?   我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能">
+<meta property="og:description" content="实现机制当用户第一次访问应用系统1的时候,因为还没有登录,会被引导到认证系统进行登录:根据用户提供的登录信息,认证系统进行身份验证,如果通过校验,应该返回给用户一个认证的凭据—ticket;用户再访问别的应用的时候就会将这个ticket带上,作为自己的凭据,应用系统接收到请求之后会把ticket送到认证系统进行校验,检验ticket的合法性,如果通过校验,用户可以在不用再次登录的情况下访问应用系统">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png">
-<meta property="article:published_time" content="2021-10-24T04:18:59.000Z">
-<meta property="article:modified_time" content="2021-10-24T07:03:06.185Z">
+<meta property="article:published_time" content="2021-10-24T07:03:45.000Z">
+<meta property="article:modified_time" content="2021-10-24T07:03:58.827Z">
 <meta property="article:author" content="kzm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png">
   
-  <title>redo日志 - xiaoKouBlog</title>
+  <title>SSO - xiaoKouBlog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -164,7 +162,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="redo日志">
+            <span class="h2" id="subtitle" title="SSO">
               
             </span>
 
@@ -174,7 +172,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-24 12:18" pubdate>
+      <time datetime="2021-10-24 15:03" pubdate>
         October 24, 2021 pm
       </time>
     </span>
@@ -185,7 +183,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      551 字
+      1.4k 字
     </span>
   
 
@@ -194,7 +192,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2 分钟
+      4 分钟
     </span>
   
 
@@ -223,23 +221,21 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">redo日志</h1>
+            <h1 style="display: none">SSO</h1>
             
             <div class="markdown-body">
-              <h2 id="redo日志是啥"><a href="#redo日志是啥" class="headerlink" title="redo日志是啥"></a>redo日志是啥</h2><p>在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?  </p>
-<p>我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能把这种修改恢复出来,所以没必要在事务提交时就把该事务在内存中修改的页刷新到磁盘,只需要把修改了哪些东西记录一下就好,那么事务对数据亏所做的修改又可以被恢复,所以上述内容也被称为重做日志(redo log)  </p>
-<p>redo日志的好处如下:  </p>
-<ul>
-<li>redo日志占用的空间非常小  </li>
-<li>redo日志是顺序写入磁盘,在执行事务的过程中,每执行一条语句,就可能产生若干redo 日志,这些日志是按照顺序产生的顺序写入磁盘的,也就是使用顺序IO  </li>
-</ul>
-<h3 id="redo-日志格式"><a href="#redo-日志格式" class="headerlink" title="redo 日志格式"></a>redo 日志格式</h3><p>redo 日志本质上只是记录了一下事务对数据库做了哪些修改,针对事务对数据库的不同修改场景定义了多种类型的 redo 日志，但是绝大部分类型的 redo 日志都有下边这种通用的结构<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210523_121641.png">  </p>
-<ul>
-<li>type:该条redo日志的类型 </li>
-<li>space ID:表空间ID </li>
-<li>page number: 页号</li>
-<li>data:该条redo日志的具体内容  </li>
-</ul>
+              <h2 id="实现机制"><a href="#实现机制" class="headerlink" title="实现机制"></a>实现机制</h2><p>当用户第一次访问应用系统1的时候,因为还没有登录,会被引导到认证系统进行登录:根据用户提供的登录信息,认证系统进行身份验证,如果通过校验,应该返回给用户一个认证的凭据—ticket;用户再访问别的应用的时候就会将这个ticket带上,作为自己的凭据,应用系统接收到请求之后会把ticket送到认证系统进行校验,检验ticket的合法性,如果通过校验,用户可以在不用再次登录的情况下访问应用系统2等..  </p>
+<p>要实现SSO, 需要以下主要的功能:  </p>
+<h3 id="CAS"><a href="#CAS" class="headerlink" title="CAS"></a>CAS</h3><p>CAS是central Authentication Service的缩写,中央认证服务,一种独立开放指令协议,是开源的企业级单点登录解决方案.  </p>
+<p>CAS 包括两部分:CAS Server和CAS Client </p>
+<p>CAS Server负责完成对用户的认证工作,会为用户签发两个重要的票据:登录票据(TGT)和服务票据(ST)来实现认证过程,CAS Server需要独立部署.  </p>
+<p>CAS Client 负责处理对客户端受保护资源的访问请求,需要对请求方进行身份认证时,重定向到CAS Server进行认证,准确的说,Client一般会以拦截器实现保护资源,对于访问受保护资源的每个web请求,CAS Client会解析请求是否包含Service Ticket(服务票据)  </p>
+<h4 id="核心票据"><a href="#核心票据" class="headerlink" title="核心票据"></a>核心票据</h4><p>CAS的核心就是Ticket,CAS的主要票据有TGT,ST,PGT,PGTIOU,PT,其中TGT,ST是CAS1.0协议中就有的票据,PGT,PGTIOU,PT是CAS2.0协议中有的票据.  </p>
+<h5 id="TGT"><a href="#TGT" class="headerlink" title="TGT"></a>TGT</h5><p>TGT是CAS为用户签发的登录票据,拥有了TGT,用户就可以证明自己在CAS成功登录过,TGT封装了cookie值以及Cookie值对应的用户信息,用户在CAS认证成功后,生成一个TGT对象,放入自己的缓存,可以是session或Redis,同时CAS生成cookie(其实就是TGT的sessionId) 或者生成一个token给浏览器(token可以跨域),当http再次请求到来时,如果传来有CAS生成cookie,则CAS以此seesionId为key查询缓存中有无TGT,如果有的话,则说明用户之前登录过,如果没有,则用户需要重新登录.  </p>
+<h5 id="TGC"><a href="#TGC" class="headerlink" title="TGC"></a>TGC</h5><p>CAS Server 生成TGT放入自己的缓存中,而TGC就是这个缓存的唯一标识  </p>
+<h5 id="ST"><a href="#ST" class="headerlink" title="ST"></a>ST</h5><p>ST是CAS为用户签发的访问某一服务票据,用户访问service时,用户访问service时,service发现用户没有ST,则要求用户去CAS获取ST,用户向CAS发出获取ST的请求,如果用户的请求包含cookie,则CAS会以此cookie值为key查询缓存中有无TGT,如果存在TGT,则用此TGT签发一个ST,返回给用户.用户凭借ST去访问service,service拿ST去CAS验证,验证通过后,允许用户访问资源.   </p>
+<p>为了保证ST的安全性,ST是基于随机生成的,而且CAS规定ST只能存活一定的时间,而且CAS协议规定ST只能使用一次,无论Service Ticket验证是否成功,CAS Service 都会清楚服务端中的该Ticket,从而可以确保一个Service Ticket不被使用两次 .  </p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/wang379275614/article/details/46337529">https://blog.csdn.net/wang379275614/article/details/46337529</a></p>
 
             </div>
             <hr>
@@ -249,7 +245,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/mysql/">mysql</a>
+                      <a class="hover-with-bg" href="/categories/SSO/">SSO</a>
                     
                   </div>
                 
@@ -267,9 +263,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/24/MVCC/">
+                      <a href="/2021/10/24/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MVCC</span>
+                        <span class="hidden-mobile">## 同步与异步</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -277,8 +273,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/24/post-title/">
-                        <span class="hidden-mobile">post title</span>
+                      <a href="/2021/10/24/ArrayList%E6%BA%90%E7%A0%81/">
+                        <span class="hidden-mobile">ArrayList源码</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

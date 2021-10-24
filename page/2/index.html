@@ -18,7 +18,7 @@
   <meta name="keywords" content="">
   <meta property="og:type" content="website">
 <meta property="og:title" content="xiaoKouBlog">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:url" content="http://example.com/page/2/index.html">
 <meta property="og:site_name" content="xiaoKouBlog">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="kzm">
@@ -176,27 +176,29 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="索引的使用">
+        <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="数据库事务">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
-          索引的使用
+        <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/" target="_self">
+          数据库事务
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/%E7%B4%A2%E5%BC%95%E7%9A%84%E4%BD%BF%E7%94%A8/" target="_self">
+        <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/" target="_self">
           
           
             
           
-          B+树索引适用的条件举例说明,我们创建一个表
-123456789CREATE TABLE person_info(id INT NOT NULL auto_increment,name VARCHAR(100) NOT NULL,birthday DATE NOT NULL,phone_number CHAR(11) NOT NULL,country varchar(100) NOT NULL,P
+          什么是事务?事务是逻辑上的一组操作,要么都执行,要么都不执行  
+比如现实中的转账业务,一个加钱,一个减钱,必须都成功 
+原子性要么全都做,要么全不做的规则称之为原子性  
+隔离性现实世界中的两次状态转换应该是互不影响的，比如说狗哥向猫爷同时进行的两次金额为5元的转账（假设可以在两个ATM机上同时操作）。那么最后狗哥的账户里肯定会少10元，猫爷的账户里肯定多了10元。但是到对应的数据库世界中，事情
         </a>
       </p>
 
@@ -204,7 +206,7 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:12" pubdate>
+            <time datetime="2021-10-24 15:06" pubdate>
               2021-10-24
             </time>
           </div>
@@ -226,26 +228,27 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/Mysql%E6%95%B0%E6%8D%AE%E8%A1%8C%E6%A0%BC%E5%BC%8F/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="Mysql数据行格式">
+        <a href="/2021/10/24/Netty%E5%85%A5%E9%97%A8/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="Netty入门">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/Mysql%E6%95%B0%E6%8D%AE%E8%A1%8C%E6%A0%BC%E5%BC%8F/" target="_self">
-          Mysql数据行格式
+        <a href="/2021/10/24/Netty%E5%85%A5%E9%97%A8/" target="_self">
+          Netty入门
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/Mysql%E6%95%B0%E6%8D%AE%E8%A1%8C%E6%A0%BC%E5%BC%8F/" target="_self">
+        <a href="/2021/10/24/Netty%E5%85%A5%E9%97%A8/" target="_self">
           
           
             
           
-          InnnDB行格式MySQL服务器上负责对表中的数据读取和写入工作的部分是存储引擎,我们常用的存储引擎InnoDB,真实数据在不同存储引擎中存放的格式一般是不同的,InnoDB真正处理数据的过程是发生在内存中的,所以需要把磁盘的数据加载到内存中,如果是处理写入或者修改请求的话,还需要把内存中的记录刷新到磁盘上,磁盘的读写速度和内存相比非常慢,所以InnoDB采取的方式是:将数据划分为若干个页,以页
+          同步与异步同步与异步关注的是消息通信机制,同步就是在发出一个调用时,在没有得到结果之前,该调用就不返回,但是一旦调用返回,就得到返回值了而异步相反,调用在发出之后,这个调用就立即返回了,所以没有返回结果,当一个异步过程调用发出之后,调用者不会立即得到结果,而是在调用发出之后,被调用者通过状态,通知来通知调用者,或者通过回调函数来处理这个调用  
+阻塞与非阻塞阻塞与非阻塞关注的是程序在等待调用结果时
         </a>
       </p>
 
@@ -253,7 +256,56 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:12" pubdate>
+            <time datetime="2021-10-24 15:05" pubdate>
+              2021-10-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/Netty/">Netty</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/10/24/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="## 同步与异步">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/24/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5/" target="_self">
+          ## 同步与异步
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/24/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5/" target="_self">
+          
+          
+            
+          
+          
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-24 15:05" pubdate>
               2021-10-24
             </time>
           </div>
@@ -275,30 +327,26 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/%E4%BA%86%E8%A7%A3%E8%BF%AD%E4%BB%A3%E5%99%A8/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="了解迭代器">
+        <a href="/2021/10/24/SSO/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="SSO">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/%E4%BA%86%E8%A7%A3%E8%BF%AD%E4%BB%A3%E5%99%A8/" target="_self">
-          了解迭代器
+        <a href="/2021/10/24/SSO/" target="_self">
+          SSO
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/%E4%BA%86%E8%A7%A3%E8%BF%AD%E4%BB%A3%E5%99%A8/" target="_self">
+        <a href="/2021/10/24/SSO/" target="_self">
           
           
             
           
-          迭代器模式就是提供一种方法对一个容器对象中的各个元素进行访问,而又不暴露该对象容器的内部细节  
-比如对于数据的遍历  
-1234int array[] = new int[3];    for (int i = 0; i &lt; array.length; i++) &#123;    System.out.println(array[i]);&#125;
-对ArrayList的处理  
-12
+          实现机制当用户第一次访问应用系统1的时候,因为还没有登录,会被引导到认证系统进行登录:根据用户提供的登录信息,认证系统进行身份验证,如果通过校验,应该返回给用户一个认证的凭据—ticket;用户再访问别的应用的时候就会将这个ticket带上,作为自己的凭据,应用系统接收到请求之后会把ticket送到认证系统进行校验,检验ticket的合法性,如果通过校验,用户可以在不用再次登录的情况下访问应用系统
         </a>
       </p>
 
@@ -306,7 +354,56 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:11" pubdate>
+            <time datetime="2021-10-24 15:03" pubdate>
+              2021-10-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/SSO/">SSO</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/10/24/ArrayList%E6%BA%90%E7%A0%81/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="ArrayList源码">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/24/ArrayList%E6%BA%90%E7%A0%81/" target="_self">
+          ArrayList源码
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/24/ArrayList%E6%BA%90%E7%A0%81/" target="_self">
+          
+          
+            
+          
+          12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152535455565758596061626364656667686970717273747576777879808182838485868788899091929394959697989910010110210
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-24 15:01" pubdate>
               2021-10-24
             </time>
           </div>
@@ -328,30 +425,28 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="数据库与文件系统">
+        <a href="/2021/10/24/HashMap/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="HashMap">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" target="_self">
-          数据库与文件系统
+        <a href="/2021/10/24/HashMap/" target="_self">
+          HashMap
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%8E%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F/" target="_self">
+        <a href="/2021/10/24/HashMap/" target="_self">
           
           
             
           
-          数据库文件系统1SHOW VARIABLES LIKE &#x27;datadir&#x27;;
-可以查看数据库文件存储的位置 ,每个数据库都对应数据目录下的一个子目录，或者说对应一个文件夹，我们每当我们新建一个数据库时， MySQL 会帮我们做这两件事儿：
-
-在 数据目录 下创建一个和数据库名同名的子目录（或者说是文件夹）。
-在该与数据库名同名的子目录下创建一个名为 db.opt 的文件，这个文
+          HashMap 实现了Map接口,允许放入key为null的元素,也允许插入value为null的元素,除该类未实现同步外,其余跟hashtable大致相同,跟TreeMap不同,该容器不保证元素顺序,容器可能会对元素重新hash,元素的顺序也会被打散,因此不同时间迭代同一个hashMap的顺序可能会不同. java解决hash冲突的办法是冲突链表方法.  
+  
+有两个参数可以影响HashMap
         </a>
       </p>
 
@@ -359,7 +454,7 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:11" pubdate>
+            <time datetime="2021-10-24 15:00" pubdate>
               2021-10-24
             </time>
           </div>
@@ -368,7 +463,7 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/mysql/">mysql</a>
+              <a href="/categories/JDK/">JDK</a>
             
           </div>
         
@@ -381,33 +476,27 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/B-%E6%A0%91%E7%B4%A2%E5%BC%95/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="B+树索引">
+        <a href="/2021/10/24/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E5%9B%9E%E9%A1%BE/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="二进制逻辑运算回顾">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/B-%E6%A0%91%E7%B4%A2%E5%BC%95/" target="_self">
-          B+树索引
+        <a href="/2021/10/24/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E5%9B%9E%E9%A1%BE/" target="_self">
+          二进制逻辑运算回顾
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/B-%E6%A0%91%E7%B4%A2%E5%BC%95/" target="_self">
+        <a href="/2021/10/24/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E5%9B%9E%E9%A1%BE/" target="_self">
           
           
             
           
-          对于非主键的查找过程是如何? 
-索引如果想要快速的找到数据在哪个页,我没必须为数据页也建立一个目录,建这个目录必须完成下面这些事:  
-
-下一个数据页中用户记录的主键值必须大于上一个页中用户记录的主键值. 
-
-下面展示数据页模型的简单示例: 黄色代表主键,由于数据页不是连续的,在向表中插入许多数据后,可能是这样的效果:下面我们为这几个页做目录,每个目录项包含以下内容:  
-
-页的用户记录中最小的主
+          逻辑变量之间的称为逻辑运算,二进制1和0在逻辑上可以代表”真”与”假”,”是”与”否”计算机的逻辑运算主要包括三种基本运算:逻辑加法(又称”或”运算),逻辑乘法(又称”与”运算)和逻辑否定(又称”非”运算),此外还有”异或”运算.  
+或运算逻辑加法通常用符号”+”或符号”∨”来表示,逻辑加法的运算规则如下:0+0=0, 0∨0=00+1=1, 0∨1=11+1=1, 1∨1=11+0=1, 1∨
         </a>
       </p>
 
@@ -415,7 +504,7 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:10" pubdate>
+            <time datetime="2021-10-24 15:00" pubdate>
               2021-10-24
             </time>
           </div>
@@ -424,7 +513,7 @@
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/mysql/">mysql</a>
+              <a href="/categories/%E7%AE%97%E6%B3%95/">算法</a>
             
           </div>
         
@@ -437,27 +526,29 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/%E4%BB%8E%E6%95%B0%E6%8D%AE%E9%A1%B5%E5%88%B0%E7%B4%A2%E5%BC%95/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="从数据页到索引">
+        <a href="/2021/10/24/Redis%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="Redis底层数据结构">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/%E4%BB%8E%E6%95%B0%E6%8D%AE%E9%A1%B5%E5%88%B0%E7%B4%A2%E5%BC%95/" target="_self">
-          从数据页到索引
+        <a href="/2021/10/24/Redis%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" target="_self">
+          Redis底层数据结构
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/%E4%BB%8E%E6%95%B0%E6%8D%AE%E9%A1%B5%E5%88%B0%E7%B4%A2%E5%BC%95/" target="_self">
+        <a href="/2021/10/24/Redis%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" target="_self">
           
           
             
           
-          数据页数据页是InnoDB管理内存空间的基本单位，InnoDB有不同类型的页，比如存放头部空间的页，存放node信息的页，存放undo日志的页，存放表中记录的页，被官方称为索引。  
-数据页的结构看一下各个部分的简单介绍我们自己存储的记录会按指定的行格式存储到User Records部分，每插入一条记录，都会从Free Space 部分，也就是尚未使用的存储空间申请一个记录大小空间划分到User 
+          简单动态字符串redis没有使用C语言的字符串表示(以空字符结尾的字符数组),而是构建了一种名为简单字符串(simple dynamic string,SDS)的数据结构,SDS除了在保存字符值外,SDS还被用作缓冲区(buffer):AOF模块中的,以及客户端状态的输入缓冲区.  
+SDS定义:  
+因为保存了字符串的长度,所以查询字符串长度(strlen)的时间复杂度是O(1)
+redis设置
         </a>
       </p>
 
@@ -465,68 +556,7 @@
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:10" pubdate>
-              2021-10-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/mysql/">mysql</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/Redis%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%B8%8E%E4%BA%8B%E5%8A%A1/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="Redis慢查询与事务">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/10/24/Redis%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%B8%8E%E4%BA%8B%E5%8A%A1/" target="_self">
-          Redis慢查询与事务
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/10/24/Redis%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%B8%8E%E4%BA%8B%E5%8A%A1/" target="_self">
-          
-          
-            
-          
-          慢查询我们知道,redis执行命令有4个步骤:
-
-发送命令
-命令排队
-执行命令
-返回结果
-
-慢查询只统计步骤3的时间对于慢查询功能，需要明确两件事：
-
-预设阀值怎么设置？
-慢查询记录存放在哪？
-
-Redis提供了slowlog-log-slower-than和slowlog-max-len配置来解决这两个问题。从字面意思就可以看出，slowlog-log-slower-than就是那个预设阀值,它
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:09" pubdate>
+            <time datetime="2021-10-24 14:59" pubdate>
               2021-10-24
             </time>
           </div>
@@ -548,36 +578,29 @@ Redis提供了slowlog-log-slower-than和slowlog-max-len配置来解决这两个�
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/SQL%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="SQL执行计划">
+        <a href="/2021/10/24/redis%E6%8C%81%E4%B9%85%E5%8C%96/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="redis持久化">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/SQL%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92/" target="_self">
-          SQL执行计划
+        <a href="/2021/10/24/redis%E6%8C%81%E4%B9%85%E5%8C%96/" target="_self">
+          redis持久化
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/SQL%E6%89%A7%E8%A1%8C%E8%AE%A1%E5%88%92/" target="_self">
+        <a href="/2021/10/24/redis%E6%8C%81%E4%B9%85%E5%8C%96/" target="_self">
           
           
             
           
-          Explain1explain select 1
-执行上面sql语句,将得到下面执行计划:  
-解释一下每个字段的意思:  
-
-id  在一个大的查询语句中每个 SELECT 关键字都对应一个唯一的 id
-select_typ SELECT 关键字对应的那个查询的类型
-table 表名 
-partitions 匹配的分区信息
-possible_keys 可能用到的索引
-key 实际上使用的索引
-k
+          redis支持RDB和AOF两种持久化机制,持久化功能能有效避免因进程退出造成的数据丢失问题
+RDBRDB持久化是把当前进程数据生成快照保存到硬盘的过程,触发RDB持久化过程分为手动触发和自动触发.  
+有两个命令可以用于生成RDB文件,一个是SAVE,另一个是BGSAVE.SAVE命令会阻塞Redis服务器进程,直到RDB文件创建完毕为止,在服务器阻塞期间,服务器不能处理任何命令请求.  
+和S
         </a>
       </p>
 
@@ -585,7 +608,7 @@ k
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:08" pubdate>
+            <time datetime="2021-10-24 14:58" pubdate>
               2021-10-24
             </time>
           </div>
@@ -594,7 +617,7 @@ k
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/mysql/">mysql</a>
+              <a href="/categories/Redis/">Redis</a>
             
           </div>
         
@@ -607,32 +630,29 @@ k
     
     
       <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/SQL-%E8%A1%A8%E8%AE%BF%E9%97%AE%E6%96%B9%E5%BC%8F%E6%8F%AD%E7%A7%98/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="SQL 表访问方式揭秘">
+        <a href="/2021/10/24/synchronized/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="synchronized">
         </a>
       </div>
     
     <article class="col-12 col-md-8 mx-auto index-info">
       <h1 class="index-header">
         
-        <a href="/2021/10/24/SQL-%E8%A1%A8%E8%AE%BF%E9%97%AE%E6%96%B9%E5%BC%8F%E6%8F%AD%E7%A7%98/" target="_self">
-          SQL 表访问方式揭秘
+        <a href="/2021/10/24/synchronized/" target="_self">
+          synchronized
         </a>
       </h1>
 
       <p class="index-excerpt">
-        <a href="/2021/10/24/SQL-%E8%A1%A8%E8%AE%BF%E9%97%AE%E6%96%B9%E5%BC%8F%E6%8F%AD%E7%A7%98/" target="_self">
+        <a href="/2021/10/24/synchronized/" target="_self">
           
           
             
           
-          单表访问方法对于单表查询来说,查询的执行方式大致分为以下两种: 
-
-使用全表扫描进行查询
-使用索引进行查询  
-
-const我们可以直接通过主键列来定位一条记录,比如我们创建一个案例: 
-1234567891011121314151617CREATE TABLE table (id INT NOT NULL AUTO_INCREMENT,key1 VARCHAR(100),key2 INT,key
+          Synchronized原子性所谓原子性就是指一个操作或者多个操作,要么全部执行并且执行的过程不会被任何因素打断,要么就都不执行 
+注意:synchronized和volatile特性的最大区别在于原子性,volatile不具备原子性  
+Synchronized使用Synchroniezd可以在静态方法,成员方法,成员对象属性上使用,归根结底它上锁的资源只有两类:一个是对象,一个是类.   
+同
         </a>
       </p>
 
@@ -640,7 +660,7 @@ const我们可以直接通过主键列来定位一条记录,比如我们创建�
         
           <div class="post-meta mr-3">
             <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:08" pubdate>
+            <time datetime="2021-10-24 14:56" pubdate>
               2021-10-24
             </time>
           </div>
@@ -649,56 +669,7 @@ const我们可以直接通过主键列来定位一条记录,比如我们创建�
           <div class="post-meta mr-3">
             <i class="iconfont icon-category"></i>
             
-              <a href="/categories/mysql/">mysql</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/Buffer-Pool/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="Buffer Pool">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/10/24/Buffer-Pool/" target="_self">
-          Buffer Pool
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/10/24/Buffer-Pool/" target="_self">
-          
-          
-            
-          
-          Buffer Pool如何调节磁盘与CPU的矛盾? 数据存放在表空间的页中,是存储在磁盘上,但是磁盘的速度很慢,所以数据库在处理数据时会把数据加载到内存中,当需要访问某个页的数据时,就会把完整的页全部加载到内存中,也就是说即使我们只需要访问一个页的一条记录,那也需要先把完整的页数据加载到内存中.  在进行完读写访问之后并不着急把该页对应的内存空间释放掉,而是将其缓存起来,这样将来再有请求访问该页面
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 15:07" pubdate>
-              2021-10-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/mysql/">mysql</a>
+              <a href="/categories/%E5%B9%B6%E5%8F%91/">并发</a>
             
           </div>
         
@@ -711,7 +682,7 @@ const我们可以直接通过主键列来定位一条记录,比如我们创建�
 
   <nav aria-label="navigation">
     <span class="pagination" id="pagination">
-      <span class="page-number current">1</span><a class="page-number" href="/page/2/#board">2</a><a class="page-number" href="/page/3/#board">3</a><a class="extend next" rel="next" href="/page/2/#board"><i class="iconfont icon-arrowright"></i></a>
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/#board">3</a><a class="extend next" rel="next" href="/page/3/#board"><i class="iconfont icon-arrowright"></i></a>
     </span>
   </nav>
 

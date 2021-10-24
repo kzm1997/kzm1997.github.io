@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html lang="en" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="kzm">
+  <meta name="keywords" content="">
+  <meta name="description" content="数据页数据页是InnoDB管理内存空间的基本单位，InnoDB有不同类型的页，比如存放头部空间的页，存放node信息的页，存放undo日志的页，存放表中记录的页，被官方称为索引。   数据页的结构看一下各个部分的简单介绍我们自己存储的记录会按指定的行格式存储到User Records部分，每插入一条记录，都会从Free Space 部分，也就是尚未使用的存储空间申请一个记录大小空间划分到User">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从数据页到索引">
+<meta property="og:url" content="http://example.com/2021/10/24/%E4%BB%8E%E6%95%B0%E6%8D%AE%E9%A1%B5%E5%88%B0%E7%B4%A2%E5%BC%95/index.html">
+<meta property="og:site_name" content="xiaoKouBlog">
+<meta property="og:description" content="数据页数据页是InnoDB管理内存空间的基本单位，InnoDB有不同类型的页，比如存放头部空间的页，存放node信息的页，存放undo日志的页，存放表中记录的页，被官方称为索引。   数据页的结构看一下各个部分的简单介绍我们自己存储的记录会按指定的行格式存储到User Records部分，每插入一条记录，都会从Free Space 部分，也就是尚未使用的存储空间申请一个记录大小空间划分到User">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_203542_1609158949200.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_203729_1609159062208.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_211835_1609161553051.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_214340_1609163036258.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_220219_1609164157246.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201229_232318_1609255411366.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201230_230910_1609340961966.png">
+<meta property="og:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201230_232233_1609341761316.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-02-24_22-44-00_1614177884019.png">
+<meta property="article:published_time" content="2021-10-24T07:10:18.000Z">
+<meta property="article:modified_time" content="2021-10-24T07:10:25.202Z">
+<meta property="article:author" content="kzm">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_203542_1609158949200.png">
+  
+  <title>从数据页到索引 - xiaoKouBlog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.css" />
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.8.12","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname"}},"search_path":"/local-search.xml"};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>xiaokouBLog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                所有文章
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="从数据页到索引">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-10-24 15:10" pubdate>
+        October 24, 2021 pm
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      6 分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">从数据页到索引</h1>
+            
+            <div class="markdown-body">
+              <h4 id="数据页"><a href="#数据页" class="headerlink" title="数据页"></a>数据页</h4><p>数据页是InnoDB管理内存空间的基本单位，InnoDB有不同类型的页，比如存放头部空间的页，存放node信息的页，存放undo日志的页，存放表中记录的页，被官方称为索引。  </p>
+<h4 id="数据页的结构"><a href="#数据页的结构" class="headerlink" title="数据页的结构"></a>数据页的结构</h4><p><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_203542_1609158949200.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201228_203542.png"><br>看一下各个部分的简单介绍<br><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_203729_1609159062208.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201228_203729.png"><br>我们自己存储的记录会按指定的行格式存储到User Records部分，每插入一条记录，都会从Free Space 部分，也就是尚未使用的存储空间申请一个记录大小空间划分到User Records部分。  </p>
+<p>创建一个案例： </p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql">mysql<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> page_demo(<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> c1 <span class="hljs-type">INT</span>,<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> c2 <span class="hljs-type">INT</span>,<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> c3 <span class="hljs-type">VARCHAR</span>(<span class="hljs-number">10000</span>),<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> <span class="hljs-keyword">PRIMARY</span> KEY (c1)<br><span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> ) CHARSET<span class="hljs-operator">=</span>ascii ROW_FORMAT<span class="hljs-operator">=</span>Compact;<br></code></pre></td></tr></table></figure>
+<p>看一下示例表的行格式：<br><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_211835_1609161553051.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201228_211835.png"><br>我们再复习下记录头信息里的各个属性：<br><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_214340_1609163036258.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201228_214340.png"><br>我们向表中插入几条数据：  </p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">mysql</span>&gt; <span class="hljs-selector-tag">INSERT</span> <span class="hljs-selector-tag">INTO</span> <span class="hljs-selector-tag">page_demo</span> <span class="hljs-selector-tag">VALUES</span>(<span class="hljs-number">1</span>, <span class="hljs-number">100</span>, <span class="hljs-string">&#x27;aaaa&#x27;</span>), (<span class="hljs-number">2</span>, <span class="hljs-number">200</span>, <span class="hljs-string">&#x27;bbbb&#x27;</span>), (<span class="hljs-number">3</span>, <span class="hljs-number">300</span>, <span class="hljs-string">&#x27;cccc&#x27;</span>),<br>(<span class="hljs-number">4</span>, <span class="hljs-number">400</span>, <span class="hljs-string">&#x27;dddd&#x27;</span>);<br></code></pre></td></tr></table></figure>
+<p><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201228_220219_1609164157246.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201228_220219.png"></p>
+<p><strong>delete_mask</strong>:<br>标志着数据是否被删除，所有被删除的记录都会组成一个垃圾链表，这个链表被称为<strong>可重用空间</strong>，如果之后又新记录插入到表中，可能把这些空间覆盖掉<br><strong>min_rec_mask</strong>:<br>B+树的每层非叶子节点中的最小记录都会添加该记录，插入的4条记录的min_rec_mask值都是0，意味着他们都不是B+书的非叶子节点中的最小记录。<br><strong>heap_no</strong>:<br> 表示当前记录在本页中的位置，InnoDB存在两个伪记录，一个代表最小记录，一个代表最大记录，记录怎么比大小，比较记录的大小就是比较主键的大小，但是不管向页中插入多少记录，两条伪纪录都是固定的，如图所示：<br><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201229_232318_1609255411366.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201229_232318.png"><br>这两条记录被单独放在Infimum+Supremum部分。 最小记录和最大记录的heap_no值分别是0和1，也就是说他们的位置最靠前。<br><strong>record_type</strong>:<br>这个属性表示记录的类型，0表示普通记录，1表示B+书非叶子节点记录，2表示最小记录，3表示最大记录。<br><strong>next_record</strong>:<br>表示从当前记录的真实数据到下一条记录真实数据的地址偏移量,可以通过一条记录找到它的一条记录,这其实是个链表,下一条记录指的并不是按照我们插入顺序的下一条记录,而是按照主键值由小到大的顺序的下一条记录,而且规定最小记录的下一条记录就是本页中主键值最小的用户记录,而本页中主键值最大的用户记录的下一条记录就是最大记录.<br><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201230_230910_1609340961966.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201230_230910.png"><br>当我们把第2条记录删除:<br><img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//snipaste_20201230_232233_1609341761316.png" srcset="/img/loading.gif" lazyload alt="snipaste_20201230_232233.png"><br>删除第二条记录后我们可以发现这些变化:  </p>
+<ul>
+<li>第二条记录并没有从存储空间移除,而是把该条记录的delete_mask值设置为1</li>
+<li>第二条记录的next_record值变成0,表示该记录没有下一条记录</li>
+<li>第一条记录的next_record指向了第三条记录</li>
+<li>最大记录的n_owned值变成了4  </li>
+</ul>
+<h4 id="Page-Directory-页目录"><a href="#Page-Directory-页目录" class="headerlink" title="Page Directory(页目录)"></a>Page Directory(页目录)</h4><p>普通的一条查询语句,最笨的方法是从最小记录开始,沿着链表一直往后找,但是mysql设计者想到了更好的办法,从目录中得到如下方式:  </p>
+<ol>
+<li>将所有正常的记录(包括最大记录和最小记录)划分为几个组</li>
+<li>每个组的最后一条记录的头信息中的n_owned属性表示该组拥有多少条记录</li>
+<li>将每个组的最后一条记录的地址偏移量单独提取出来按顺序存储到Page Directory,也就是页目录,页目录中的这些地址偏移量被称为槽点(slot),所以这个页面目录就是由槽组成的.  </li>
+</ol>
+<p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-02-24_22-44-00_1614177884019.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210224_224400.png">  </p>
+<p><strong>对于最小记录所在的分组只能有1条记录,最大记录所在的分组拥有的记录条数只能在1~8条之间,剩下的分组中记录的条数在4-8条之间,所以分组是按照下边的步骤进行的</strong>:  </p>
+<ol>
+<li>初始情况下一个数据页里只有最小记录和最大记录两条,属于两个分组</li>
+<li>之后每插入一条数据,都会从页目录中找到主键值比本记录值大并且差值最小的槽,然后把该槽对应的记录的n_owned值加1,直到组内有8条数据</li>
+<li>在一个组的记录等于8时,再插入一条数据时,会将组拆分为两个组,一个组中4条记录,另一个5条记录,并在页目录中新增一个槽来记录这个新增分组的最大记录偏移量.  </li>
+</ol>
+<p>所以在一个数据页中查找指定主键值的记录的过程分为两步:</p>
+<ol>
+<li>通过二分法确定该记录所在的槽,并找到该槽中主键值最小的那条记录 </li>
+<li>通过记录的next_record属性遍历该槽所在的组中的各个记录 </li>
+</ol>
+<h3 id="页面头部"><a href="#页面头部" class="headerlink" title="页面头部"></a>页面头部</h3><p>为了能得到一个数据页中存储的记录的状态信息,比如本页中已经存储了多少记录,第一条记录的地址是什么,页目录中存储了多少个槽等等.这些信息存储在Page Header部分.</p>
+<h3 id="文件部分"><a href="#文件部分" class="headerlink" title="文件部分"></a>文件部分</h3><p>File Header 主要记录了页的一些通用信息,比如这个页的编号是多少,它上一个页,下一个页是多少等等</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/mysql/">mysql</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">
+                  
+                    本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！
+                  
+                </p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/10/24/B-%E6%A0%91%E7%B4%A2%E5%BC%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">B+树索引</span>
+                        <span class="visible-mobile">Previous</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/10/24/Redis%E6%85%A2%E6%9F%A5%E8%AF%A2%E4%B8%8E%E4%BA%8B%E5%8A%A1/">
+                        <span class="hidden-mobile">Redis慢查询与事务</span>
+                        <span class="visible-mobile">Next</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+
+  
+
+  
+</footer>
+
+
+  <!-- SCRIPTS -->
+  
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  
+    <script  src="https://cdn.jsdelivr.net/npm/tocbot@4/dist/tocbot.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3/dist/jquery.fancybox.min.js" ></script>
+  
+  
+    <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4/anchor.min.js" ></script>
+  
+  
+    <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2/dist/clipboard.min.js" ></script>
+  
+
+
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+</body>
+</html>

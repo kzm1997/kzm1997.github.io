@@ -16,21 +16,22 @@
   <meta name="description" content="">
   <meta name="author" content="kzm">
   <meta name="keywords" content="">
-  <meta name="description" content="redo日志是啥在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?   我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能">
+  <meta name="description" content="同步与异步同步与异步关注的是消息通信机制,同步就是在发出一个调用时,在没有得到结果之前,该调用就不返回,但是一旦调用返回,就得到返回值了而异步相反,调用在发出之后,这个调用就立即返回了,所以没有返回结果,当一个异步过程调用发出之后,调用者不会立即得到结果,而是在调用发出之后,被调用者通过状态,通知来通知调用者,或者通过回调函数来处理这个调用   阻塞与非阻塞阻塞与非阻塞关注的是程序在等待调用结果时">
 <meta property="og:type" content="article">
-<meta property="og:title" content="redo日志">
-<meta property="og:url" content="http://example.com/2021/10/24/redo%E6%97%A5%E5%BF%97/index.html">
+<meta property="og:title" content="Netty入门">
+<meta property="og:url" content="http://example.com/2021/10/24/Netty%E5%85%A5%E9%97%A8/index.html">
 <meta property="og:site_name" content="xiaoKouBlog">
-<meta property="og:description" content="redo日志是啥在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?   我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能">
+<meta property="og:description" content="同步与异步同步与异步关注的是消息通信机制,同步就是在发出一个调用时,在没有得到结果之前,该调用就不返回,但是一旦调用返回,就得到返回值了而异步相反,调用在发出之后,这个调用就立即返回了,所以没有返回结果,当一个异步过程调用发出之后,调用者不会立即得到结果,而是在调用发出之后,被调用者通过状态,通知来通知调用者,或者通过回调函数来处理这个调用   阻塞与非阻塞阻塞与非阻塞关注的是程序在等待调用结果时">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png">
-<meta property="article:published_time" content="2021-10-24T04:18:59.000Z">
-<meta property="article:modified_time" content="2021-10-24T07:03:06.185Z">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_23-31-12_1621783890886.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-06-14_11-32-32_1623643897654.png">
+<meta property="article:published_time" content="2021-10-24T07:05:35.000Z">
+<meta property="article:modified_time" content="2021-10-24T07:05:52.498Z">
 <meta property="article:author" content="kzm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png">
+<meta name="twitter:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_23-31-12_1621783890886.png">
   
-  <title>redo日志 - xiaoKouBlog</title>
+  <title>Netty入门 - xiaoKouBlog</title>
 
   <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4/dist/css/bootstrap.min.css" />
 
@@ -164,7 +165,7 @@
       <div class="full-bg-img">
         <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
           <div class="page-header text-center fade-in-up">
-            <span class="h2" id="subtitle" title="redo日志">
+            <span class="h2" id="subtitle" title="Netty入门">
               
             </span>
 
@@ -174,7 +175,7 @@
   
     <span class="post-meta">
       <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-      <time datetime="2021-10-24 12:18" pubdate>
+      <time datetime="2021-10-24 15:05" pubdate>
         October 24, 2021 pm
       </time>
     </span>
@@ -185,7 +186,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      551 字
+      851 字
     </span>
   
 
@@ -194,7 +195,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      2 分钟
+      3 分钟
     </span>
   
 
@@ -223,22 +224,36 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">redo日志</h1>
+            <h1 style="display: none">Netty入门</h1>
             
             <div class="markdown-body">
-              <h2 id="redo日志是啥"><a href="#redo日志是啥" class="headerlink" title="redo日志是啥"></a>redo日志是啥</h2><p>在真正访问页面之前,需要把在磁盘上的页缓存到Buffer Pool之后才可以访问,但是在事务的持久性的特性中,对于一个已经提交的事务,在事务提交后即使系统崩溃了,这个事务对数据库所做的更改页不能丢失,但是假如事务提交后发生了某个故障,导致内存中的数据都失效了,那么数据库如何做到持久性?  </p>
-<p>我们只是想让已经提交了的事务对数据库中数据所做的修改永久生效,即使后来系统崩溃,在重启后也能把这种修改恢复出来,所以没必要在事务提交时就把该事务在内存中修改的页刷新到磁盘,只需要把修改了哪些东西记录一下就好,那么事务对数据亏所做的修改又可以被恢复,所以上述内容也被称为重做日志(redo log)  </p>
-<p>redo日志的好处如下:  </p>
+              <h2 id="同步与异步"><a href="#同步与异步" class="headerlink" title="同步与异步"></a>同步与异步</h2><p>同步与异步关注的是消息通信机制,同步就是在发出一个调用时,在没有得到结果之前,该调用就不返回,但是一旦调用返回,就得到返回值了<br>而异步相反,调用在发出之后,这个调用就立即返回了,所以没有返回结果,当一个异步过程调用发出之后,调用者不会立即得到结果,而是在调用发出之后,被调用者通过状态,通知来通知调用者,或者通过回调函数来处理这个调用  </p>
+<h2 id="阻塞与非阻塞"><a href="#阻塞与非阻塞" class="headerlink" title="阻塞与非阻塞"></a>阻塞与非阻塞</h2><p>阻塞与非阻塞关注的是程序在等待调用结果时的状态<br>阻塞调用是指调用结果返回之前,当前线程会被挂起,调用线程只有在得到结果之后才会返回.<br>非阻塞调用指的是不能立即得到结果之前,该调用不会阻塞当前线程.  </p>
+<h2 id="NIO"><a href="#NIO" class="headerlink" title="NIO"></a>NIO</h2><p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_23-31-12_1621783890886.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210523_233112.png">  </p>
+<h3 id="事件和Channel"><a href="#事件和Channel" class="headerlink" title="事件和Channel"></a>事件和Channel</h3><p>Netty的时间按照入站或出站数据流的相关性进行分类,可能由入站数据或者相关的状态更改而触发的事件包括:  </p>
 <ul>
-<li>redo日志占用的空间非常小  </li>
-<li>redo日志是顺序写入磁盘,在执行事务的过程中,每执行一条语句,就可能产生若干redo 日志,这些日志是按照顺序产生的顺序写入磁盘的,也就是使用顺序IO  </li>
+<li>连接已被激活或者连接失活;</li>
+<li>数据读取</li>
+<li>用户事件</li>
+<li>错误事件</li>
 </ul>
-<h3 id="redo-日志格式"><a href="#redo-日志格式" class="headerlink" title="redo 日志格式"></a>redo 日志格式</h3><p>redo 日志本质上只是记录了一下事务对数据库做了哪些修改,针对事务对数据库的不同修改场景定义了多种类型的 redo 日志，但是绝大部分类型的 redo 日志都有下边这种通用的结构<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-05-23_12-16-41_1621743411311.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210523_121641.png">  </p>
+<p>出站事件是未来将会触发的某个操作结果: </p>
 <ul>
-<li>type:该条redo日志的类型 </li>
-<li>space ID:表空间ID </li>
-<li>page number: 页号</li>
-<li>data:该条redo日志的具体内容  </li>
+<li>打开或者关闭到远程借点的链接</li>
+<li>将数据冲刷到套接字</li>
+</ul>
+<p>Netty的事件可以分发给ChannelHandler处理:<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-06-14_11-32-32_1623643897654.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210614_113232.png">  </p>
+<h3 id="选择器-事件和EventLoop"><a href="#选择器-事件和EventLoop" class="headerlink" title="选择器,事件和EventLoop"></a>选择器,事件和EventLoop</h3><p>在内部,Netty将会为每个Channel分配一个EventLoop,用以处理所有事件,包括: </p>
+<ul>
+<li>注册感兴趣的事件</li>
+<li>将事件派发给ChannelHandler</li>
+<li>安排进一步的动作</li>
+</ul>
+<h3 id="ChannelPipeline接口"><a href="#ChannelPipeline接口" class="headerlink" title="ChannelPipeline接口"></a>ChannelPipeline接口</h3><p>ChannelPipline提供了ChannelHandler链的容器,当Channel被创建时,它会被自动的分配到它专属的ChannelPipeline. Channelhandler安装到ChannelPipeline中的过程如下:  </p>
+<ul>
+<li>一个ChannelInitializer的实现被注册到了ServerBootstrap中;</li>
+<li>当ChannelInitiazer.initChannel()方法被调用时,ChannelInitializer将在ChannelPipeline中安装一组自定义的ChannelHandler;</li>
+<li>ChannelInitializer将它自己从ChannelPipeline中移除</li>
 </ul>
 
             </div>
@@ -249,7 +264,7 @@
                   <div class="post-meta mr-3">
                     <i class="iconfont icon-category"></i>
                     
-                      <a class="hover-with-bg" href="/categories/mysql/">mysql</a>
+                      <a class="hover-with-bg" href="/categories/Netty/">Netty</a>
                     
                   </div>
                 
@@ -267,9 +282,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2021/10/24/MVCC/">
+                      <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">MVCC</span>
+                        <span class="hidden-mobile">数据库事务</span>
                         <span class="visible-mobile">Previous</span>
                       </a>
                     
@@ -277,8 +292,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2021/10/24/post-title/">
-                        <span class="hidden-mobile">post title</span>
+                      <a href="/2021/10/24/%E5%90%8C%E6%AD%A5%E4%B8%8E%E5%BC%82%E6%AD%A5/">
+                        <span class="hidden-mobile">## 同步与异步</span>
                         <span class="visible-mobile">Next</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
