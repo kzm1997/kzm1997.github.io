@@ -16,29 +16,30 @@
   <meta name="description" content="">
   <meta name="author" content="kzm">
   <meta name="keywords" content="">
-  <meta name="description" content="简单动态字符串redis没有使用C语言的字符串表示(以空字符结尾的字符数组),而是构建了一种名为简单字符串(simple dynamic string,SDS)的数据结构,SDS除了在保存字符值外,SDS还被用作缓冲区(buffer):AOF模块中的,以及客户端状态的输入缓冲区.   SDS定义:   因为保存了字符串的长度,所以查询字符串长度(strlen)的时间复杂度是O(1) redis设置">
+  <meta name="description" content="Redis底层数据结构简单动态字符串(SDS)redis构建了一种名为简单动态字符串(SDS)的数据结构,并将SDS作为redis的默认字符串表示。除了用来保存字符串值外，SDS还被用作缓冲区：AOF模块中的AOF持久化，以及客户端状态中的输入缓冲区SDS的结构:   12345678910111213struct sdshdr &amp;#123;    &#x2F;&#x2F; 记录 buf 数组中已使用字节的数量">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis底层数据结构">
 <meta property="og:url" content="http://example.com/2021/10/24/Redis%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="xiaoKouBlog">
-<meta property="og:description" content="简单动态字符串redis没有使用C语言的字符串表示(以空字符结尾的字符数组),而是构建了一种名为简单字符串(simple dynamic string,SDS)的数据结构,SDS除了在保存字符值外,SDS还被用作缓冲区(buffer):AOF模块中的,以及客户端状态的输入缓冲区.   SDS定义:   因为保存了字符串的长度,所以查询字符串长度(strlen)的时间复杂度是O(1) redis设置">
+<meta property="og:description" content="Redis底层数据结构简单动态字符串(SDS)redis构建了一种名为简单动态字符串(SDS)的数据结构,并将SDS作为redis的默认字符串表示。除了用来保存字符串值外，SDS还被用作缓冲区：AOF模块中的AOF持久化，以及客户端状态中的输入缓冲区SDS的结构:   12345678910111213struct sdshdr &amp;#123;    &#x2F;&#x2F; 记录 buf 数组中已使用字节的数量">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628724317755.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628726243960.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-57-52_1628726291375.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628776000904.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-06-28_1628777203654.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-10-50_1628777470397.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-11-27_1628777501726.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-12-25_1628777556629.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//%E4%B8%80%E5%B1%82%E8%B7%B3%E8%B7%83%E8%A1%A8_1628778246574.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//%E4%BA%8C%E5%B1%82%E8%B7%B3%E8%B7%83%E8%A1%A8_1628778504952.png">
-<meta property="og:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-29-25_1628778684969.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//617219185-d6dbc0ae3b47b326_fix732.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//2574488259-b43b7b2798e92e99_fix7322.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-19-22.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-23-24.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-27-41.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-29-05.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-39-26.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-49-59.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-53-34.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_16-04-00.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_16-14-48.png">
+<meta property="og:image" content="http://oss.xiaokoua.cn//Snipaste_2021-10-31_16-17-17.png">
 <meta property="article:published_time" content="2021-10-24T06:59:09.000Z">
-<meta property="article:modified_time" content="2021-10-24T07:03:04.853Z">
+<meta property="article:modified_time" content="2021-10-31T08:23:05.012Z">
 <meta property="article:author" content="kzm">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628724317755.png">
+<meta name="twitter:image" content="http://oss.xiaokoua.cn//617219185-d6dbc0ae3b47b326_fix732.png">
   
   <title>Redis底层数据结构 - xiaoKouBlog</title>
 
@@ -195,7 +196,7 @@
   
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.3k 字
+      11k 字
     </span>
   
 
@@ -204,7 +205,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      7 分钟
+      33 分钟
     </span>
   
 
@@ -236,37 +237,207 @@
             <h1 style="display: none">Redis底层数据结构</h1>
             
             <div class="markdown-body">
-              <h2 id="简单动态字符串"><a href="#简单动态字符串" class="headerlink" title="简单动态字符串"></a>简单动态字符串</h2><p>redis没有使用C语言的字符串表示(以空字符结尾的字符数组),而是构建了一种名为简单字符串(simple dynamic string,SDS)的数据结构,SDS除了在保存字符值外,SDS还被用作缓冲区(buffer):AOF模块中的,以及客户端状态的输入缓冲区.  </p>
-<h3 id="SDS定义"><a href="#SDS定义" class="headerlink" title="SDS定义:"></a>SDS定义:</h3><p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628724317755.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_072500.png">  </p>
-<p>因为保存了字符串的长度,所以查询字符串长度(strlen)的时间复杂度是O(1)</p>
-<p>redis设置的free空间可以杜绝缓冲区溢出 ,减少修改字符串时带来的内存重分配次数<br>当SDS的API对一个SDS进行修改,并且需要对SDS进行空间扩展的时候,程序不仅会为SDS分配修改所必须要的空间,还会为SDS分配额外的未使用空间.  </p>
-<h4 id="空间预分配"><a href="#空间预分配" class="headerlink" title="空间预分配"></a>空间预分配</h4><p>在SDS的长度小于1MB的时候,Redis会为SDS分配和len属性同样大小的未使用空间(比如13kb时,分配13kb的未使用空间,那么总长度27kb),当长度大于1MB后,会为SDS分配1MB的为使用空间(比如30MB时,分配1MB,总长度31MB+1kb),<br>当将字符串修改为一个更长的字符串时,如果len长度不够,那么将进行扩容,在第二次修改字符串时,如果检测到字符串的未使用空间够本次修改使用,那么将不需要扩容</p>
-<h4 id="惰性释放"><a href="#惰性释放" class="headerlink" title="惰性释放"></a>惰性释放</h4><p>惰性释放用于优化字符串缩短操作,程序并不立即回收多出来的字节. </p>
-<p>例子:  </p>
-<p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628726243960.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_072500.png"><br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-57-52_1628726291375.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_075752.png"></p>
-<p>惰性释放后,如果修改字符串为更长的字符串,可能可以为redis省去一次预分配的操作,算是一种空间换时间的操作. </p>
-<h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><p>redis链表就是一个双向链表  </p>
-<h2 id="字典hash"><a href="#字典hash" class="headerlink" title="字典hash"></a>字典hash</h2><p>redis的hash结构由dictht定义<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_07-25-00_1628776000904.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_072500.png">  </p>
-<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictht</span>&#123;</span><br>  dictEntry **table;  <span class="hljs-comment">//哈希表数组</span><br>  <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> size;  <span class="hljs-comment">//哈希表大小 </span><br>  <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> sizemask; <span class="hljs-comment">//哈希表大小掩码,用于计算索引值,总是等于size-1</span><br>  <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> used;  <span class="hljs-comment">//哈希表已有节点的数量</span><br>&#125;dictht<br></code></pre></td></tr></table></figure>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictEntry</span>&#123;</span><br>  <span class="hljs-keyword">void</span> * key <span class="hljs-comment">//键</span><br>  <span class="hljs-class"><span class="hljs-keyword">union</span>&#123;</span>  <span class="hljs-comment">//值</span><br>    <span class="hljs-keyword">void</span> * val;<br>    uint64_tu64;<br>    int64_ts64;<br> &#125;v<br>  <span class="hljs-comment">//指向下一个哈希表节点,形成链表</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictEntry</span> *<span class="hljs-title">next</span>;</span><br>&#125;dictEntry<br></code></pre></td></tr></table></figure>
-<p>key属性保存着键值对中的键,而v属性保存键值对的值,值可以是一个指针,或者是一个uint64_t整数,或者是int64_t整数. </p>
-<figure class="highlight verilog"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs verilog"><span class="hljs-keyword">typedef</span> <span class="hljs-keyword">struct</span> dict&#123;<br>  <span class="hljs-comment">//类型特定函数 </span><br>  dictType *<span class="hljs-keyword">type</span>;<br>  <span class="hljs-comment">//私有数据 </span><br>  <span class="hljs-keyword">void</span> *privdata;<br>  <span class="hljs-comment">//哈希表</span><br>  dictht ht[<span class="hljs-number">2</span>];<br>  <span class="hljs-keyword">int</span> rehashidx;  <span class="hljs-comment">//rehash索引,当rehash不进行时,值为-1;</span><br>&#125;<br></code></pre></td></tr></table></figure>
-<p>type指针指向了保存了一簇用于操作特定类型键值对的函数dictType.  </p>
-<p>ht属性是一个包含两个项的数组,每项都是dictht哈希表,只有在rehash的时候会用到ht[1] ,rhashidx记录了rehash的速度. 如果没有在hash,则值为-1  </p>
-<p><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-06-28_1628777203654.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_220628.png"></p>
-<p>下面简单说一下rehash:  </p>
-<p>当hash表需要扩容时,会为ht[1]分配内存空间,分配的空间的大小也是2的次幂的大小和java一样(ps:为了减少在rehash时,hash的重新分布计算,提高rehash的速度)<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-10-50_1628777470397.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_221050.png"><br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-11-27_1628777501726.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_221127.png"><br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-12-25_1628777556629.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_221225.png">  </p>
-<p>redis会利用rehashidx进行,渐进式hash,通过递增该值,反映rehash进度,这样可以不用等待rehash全部完成才能进行接下去的操作.  </p>
-<h2 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h2><p>redis利用跳跃表实现zset </p>
-<p>先来解释一下什么是跳跃表  </p>
-<p>对于一个单链表来说,即便表中存储的数据是有序的,如果我们要在其中查找出某个数据,也只能从头到尾遍历链表,这样查找效率会很低,如果我们想要提高查找效率,可以考虑在链表上建立索引,每两个节点提取一个节点到上一级,我们把抽出来的那一级叫做索引.  </p>
-<p><img src="http://oss.xiaokoua.cn/blog//%E4%B8%80%E5%B1%82%E8%B7%B3%E8%B7%83%E8%A1%A8_1628778246574.png" srcset="/img/loading.gif" lazyload alt="一层跳跃表.png"></p>
-<p>这个时候,如果我们假设要查找节点8,我们可以先在索引层遍历,当遍历到索引层中值为7的节点时,发现下一个节点是9,那么要查找的节点肯定就在这之间,我们下降到连表层就找到了这个节点. 同理,再加一层索引:<br><img src="http://oss.xiaokoua.cn/blog//%E4%BA%8C%E5%B1%82%E8%B7%B3%E8%B7%83%E8%A1%A8_1628778504952.png" srcset="/img/loading.gif" lazyload alt="二层跳跃表.png"><br>其实这也是利用二分的思想<br><img src="http://oss.xiaokoua.cn/blog//Snipaste_2021-08-12_22-29-25_1628778684969.png" srcset="/img/loading.gif" lazyload alt="Snipaste_20210812_222925.png"></p>
-<p>zskiplist结构包含以下属性:<br>header:指向跳跃表的头结点.<br>tail:指向跳跃表的尾节点.<br>level:记录目前跳跃表内,层数最大的那个节点的层数.<br>length:记录跳跃表的长度,就是跳跃表目前包含的节点的数量.  </p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span>&#123;</span><br>  <span class="hljs-comment">//层</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistLevel</span>&#123;</span><br>     <span class="hljs-comment">//前进指针 </span><br>     <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">forward</span>;</span><br>     <span class="hljs-comment">//跨度</span><br>     <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> span;<br>  &#125;level[];<br>  <span class="hljs-comment">//后退指针</span><br>  <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskipListNode</span> * <span class="hljs-title">backward</span>;</span><br>  <span class="hljs-comment">//分值</span><br>  <span class="hljs-keyword">double</span> score;  <br>  <span class="hljs-comment">//成员对象 </span><br>  robj *obj;<br>&#125;<br></code></pre></td></tr></table></figure>
-<p>zskiplistNode包含以下属性:<br>level数组:其内部元素指向下一个索引的指针<br>前进指针:指向下一个索引<br>跨度:跨度并不只是和遍历有关,跨度实际上是用来计算排位(rank)的,在查找节点的过程中,将沿途访问过的所有层的跨度累计起来,得到的结果就是目标节点在跳跃表中的排位.<br>后退指针:指向上一个节点</p>
-<p>在同一个跳跃表中,多个节点可以包含相同的分值,但每个节点的成员对象必须是唯一的,跳跃表中的节点按照分值大小进行排序,当分值相同时,节点按照成员对象的大小进行排序.  </p>
-<h2 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h2><h2 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h2>
+              <h1 id="Redis底层数据结构"><a href="#Redis底层数据结构" class="headerlink" title="Redis底层数据结构"></a>Redis底层数据结构</h1><h2 id="简单动态字符串-SDS"><a href="#简单动态字符串-SDS" class="headerlink" title="简单动态字符串(SDS)"></a>简单动态字符串(SDS)</h2><p>redis构建了一种名为简单动态字符串(SDS)的数据结构,并将SDS作为redis的默认字符串表示。<br>除了用来保存字符串值外，SDS还被用作缓冲区：AOF模块中的AOF持久化，以及客户端状态中的输入缓冲区<br>SDS的结构:  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sdshdr</span> &#123;</span><br><br>    <span class="hljs-comment">// 记录 buf 数组中已使用字节的数量</span><br>    <span class="hljs-comment">// 等于 SDS 所保存字符串的长度</span><br>    <span class="hljs-keyword">int</span> len;<br><br>    <span class="hljs-comment">// 记录 buf 数组中未使用字节的数量</span><br>    <span class="hljs-keyword">int</span> <span class="hljs-built_in">free</span>;<br><br>    <span class="hljs-comment">// 字节数组，用于保存字符串</span><br>    <span class="hljs-keyword">char</span> buf[];<br><br>&#125;; <br></code></pre></td></tr></table></figure>
+
+<ul>
+<li>free 属性的值为 0 ， 表示这个 SDS 没有分配任何未使用空间</li>
+<li>len 属性的值为 5 ， 表示这个 SDS 保存了一个五字节长的字符串</li>
+<li>buf 属性是一个 char 类型的数组， 数组的前五个字节分别保存了 ‘R’ 、 ‘e’ 、 ‘d’ 、 ‘i’ 、 ‘s’ 五个字符， 而最后一个字节则保存了空字符 ‘\0’   </li>
+</ul>
+<h4 id="SDS具有的优势："><a href="#SDS具有的优势：" class="headerlink" title="SDS具有的优势："></a>SDS具有的优势：</h4><blockquote>
+<p>常数复杂度获取字符串长度    </p>
+</blockquote>
+<p>因为SDS数据结构中保存了字符串的长度,所以与C语言遍历字符数组相比，SDS获取字符串长度的时间复杂度为O(1)    </p>
+<blockquote>
+<p> 防止缓冲区溢出  </p>
+</blockquote>
+<p>C语言不记录自身长度带来的另一个问题是容易造成缓冲区溢出,比如对字符串append操作时,SDS会检查SDS的空间是否满足修改的需求，如果不满足的话，SDS会进行扩容操作, 防止缓冲区溢出，在SDS中,buf数组长度不一定就是字符串数量加一,数组可以包含未使用的字节,SDS使用free属性记录未使用空间，因为内存重分配是一个比较耗时的操作，当需要扩容时，SDS实现<strong>空间预分配</strong>操作，如果对SDS修改后的长度小于1MB，<strong>这里的修改后的长度是指的append操作之后的长度</strong>，SDS会分配和len长度一样的空间作为预备空间，当修改后的长度大于1MB，那么redis会为SDS分配1MB的未使用空间，当SDS进行类似trim操作时，SDS实现<strong>惰性空间释放</strong>操作，就是说，SDS并没有释放多出来的free空间，如果将来要对字符串增长的话，那么未使用空间将会派上用场  </p>
+<blockquote>
+<p>二进制安全</p>
+</blockquote>
+<p> C字符串中的字符必须符合某种编码，除了字符串的末尾，字符串里面是不能包含空字符的，否则会被认为是字符串结尾，这些限制了C字符串只能保存文本数据，而不能保存像图片这样的二进制数据 , 而SDS的API都会以处理二进制的方式来处理存放在<code>buf</code>数组里的数据，不会对里面的数据做任何的限制。SDS使用<code>len</code>属性的值来判断字符串是否结束，而不是空字符 </p>
+<blockquote>
+<p> 兼容部分C字符串函 </p>
+</blockquote>
+<p> 虽然SDS的API是二进制安全的，但还是像C字符串一样以空字符结尾，目的是为了让保存文本数据的SDS可以重用一部分C字符串的函数 </p>
+<h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><p> 链表是一种比较常见的数据结构了，特点是易于插入和删除、内存利用率高、且可以灵活调整链表长度，但随机访问困难。许多高级编程语言都内置了链表的实现，但是C语言并没有实现链表，所以Redis实现了自己的链表数据结构 ，链表在redis中应用非常广泛，列表的底层实现就是链表，redis的发布与订阅，慢查询，监视器等功能都用到了链表。 Redis服务器本身还使用链表来保存多个客户端的状态信息，以及使用链表来构建客户端输出缓冲区。    </p>
+<p>链表节点的定义如下：  </p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs gauss">typedef <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> &#123;<br><br>    <span class="hljs-comment">// 前置节点</span><br>    <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> *prev;<br><br>    <span class="hljs-comment">// 后置节点</span><br>    <span class="hljs-keyword">struct</span> <span class="hljs-type">listNode</span> *next;<br><br>    <span class="hljs-comment">// 节点的值</span><br>    void *value;<br><br>&#125;<br>listNode;  <br></code></pre></td></tr></table></figure>
+
+<p>多个listNode可以通过prev和next指针组成双端链表,如下图:</p>
+<p><img src="http://oss.xiaokoua.cn//617219185-d6dbc0ae3b47b326_fix732.png" srcset="/img/loading.gif" lazyload></p>
+<p> 虽然仅仅使用多个 listNode 结构就可以组成链表， 但使用 adlist.h/list 来持有链表的话， 操作起来会更方便：  </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">list</span> &#123;</span><br><br>    <span class="hljs-comment">// 表头节点</span><br>    listNode *head;<br><br>    <span class="hljs-comment">// 表尾节点</span><br>    listNode *tail;<br><br>    <span class="hljs-comment">// 链表所包含的节点数量</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> len;<br><br>    <span class="hljs-comment">// 节点值复制函数</span><br>    <span class="hljs-keyword">void</span> *(*dup)(<span class="hljs-keyword">void</span> *ptr);<br><br>    <span class="hljs-comment">// 节点值释放函数</span><br>    <span class="hljs-built_in"><span class="hljs-keyword">void</span></span> (*free)(<span class="hljs-keyword">void</span> *ptr);<br><br>    <span class="hljs-comment">// 节点值对比函数</span><br>    <span class="hljs-built_in"><span class="hljs-keyword">int</span></span> (*match)(<span class="hljs-keyword">void</span> *ptr, <span class="hljs-keyword">void</span> *key);<br><br>&#125; list;<br></code></pre></td></tr></table></figure>
+
+<p> list 结构为链表提供了表头指针 head 、表尾指针 tail ， 以及链表长度计数器 len ， 而 dup 、 free 和 match 成员则是用于实现多态链表所需的类型特定函数： </p>
+<ul>
+<li><p>dup 函数用于复制链表节点所保存的值；</p>
+</li>
+<li><p>free 函数用于释放链表节点所保存的值；</p>
+</li>
+<li><p>match 函数则用于对比链表节点所保存的值和另一个输入值是否相等。 </p>
+</li>
+</ul>
+<p><img src="http://oss.xiaokoua.cn//2574488259-b43b7b2798e92e99_fix7322.png" srcset="/img/loading.gif" lazyload>  </p>
+<h4 id="链表特性"><a href="#链表特性" class="headerlink" title="链表特性"></a>链表特性</h4><ul>
+<li><p>双端： 链表节点带有 prev 和 next 指针， 获取某个节点的前置节点和后置节点的复杂度都是 O(1) 。</p>
+</li>
+<li><p>无环： 表头节点的 prev 指针和表尾节点的 next 指针都指向 NULL ， 对链表的访问以 NULL 为终点。</p>
+</li>
+<li><p>带表头指针和表尾指针： 通过 list 结构的 head 指针和 tail 指针， 程序获取链表的表头节点和表尾节点的复杂度为 O(1) 。</p>
+</li>
+<li><p>带链表长度计数器： 程序使用 list 结构的 len 属性来对 list 持有的链表节点进行计数， 程序获取链表中节点数量的复杂度为 O(1) 。</p>
+</li>
+<li><p>多态： 链表节点使用 void* 指针来保存节点值， 并且可以通过 list 结构的 dup 、 free 、 match 三个属性为节点值设置类型特定函数， 所以链表可以用于保存各种不同类型的值。     </p>
+</li>
+</ul>
+<h2 id="字典"><a href="#字典" class="headerlink" title="字典"></a>字典</h2><p>Redis 数据库底层就是用字典实现的，对数据库的增、删、改、查操作都是构建在对字典的操作之上，比如： </p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gams"><span class="hljs-keyword">set</span> msg <span class="hljs-comment">&quot;hello world&quot;</span><br>OK<br></code></pre></td></tr></table></figure>
+
+<p>创建一个 key 为 “msg”，value 为 “hello world” 的键值对，保存在代表数据库的字典中<br>字典还是哈希键的底层实现之一： 当一个哈希键包含的键值对比较多， 又或者键值对中的元素都是比较长的字符串时， Redis 就会使用字典作为哈希键的底层实现。<br>哈希表结构定义</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictht</span> &#123;</span><br><br>    <span class="hljs-comment">// 哈希表数组</span><br>    dictEntry **table;<br><br>    <span class="hljs-comment">// 哈希表大小</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> size;<br><br>    <span class="hljs-comment">// 哈希表大小掩码，用于计算索引值</span><br>    <span class="hljs-comment">// 总是等于 size - 1</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> sizemask;<br><br>    <span class="hljs-comment">// 该哈希表已有节点的数量</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> used;<br><br>&#125; dictht;<br></code></pre></td></tr></table></figure>
+
+<p>table 属性是一个数组， 数组中的每个元素都是一个指向 dict.h/dictEntry 结构的指针， 每个 dictEntry 结构保存着一个键值对。<br>size 属性记录了哈希表的大小， 也即是 table 数组的大小， 而 used 属性则记录了哈希表目前已有节点（键值对）的数量。<br>sizemask 属性的值总是等于 size - 1 ， 这个属性和哈希值一起决定一个键应该被放到 table 数组的哪个索引上面。</p>
+<h4 id="哈希节点"><a href="#哈希节点" class="headerlink" title="哈希节点"></a>哈希节点</h4><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictEntry</span> &#123;</span><br><br>    <span class="hljs-comment">// 键</span><br>    <span class="hljs-keyword">void</span> *key;<br><br>    <span class="hljs-comment">// 值</span><br>    <span class="hljs-class"><span class="hljs-keyword">union</span> &#123;</span><br>        <span class="hljs-keyword">void</span> *val;<br>        <span class="hljs-keyword">uint64_t</span> u64;<br>        <span class="hljs-keyword">int64_t</span> s64;<br>    &#125; v;<br><br>    <span class="hljs-comment">// 指向下个哈希表节点，形成链表</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">dictEntry</span> *<span class="hljs-title">next</span>;</span><br><br>&#125; dictEntry;<br></code></pre></td></tr></table></figure>
+
+<p>key 属性保存着键值对中的键， 而 v 属性则保存着键值对中的值， 其中键值对的值可以是一个指针， 或者是一个 uint64_t 整数， 又或者是一个 int64_t 整数。<br>next 属性是指向另一个哈希表节点的指针， 这个指针可以将多个哈希值相同的键值对连接在一次， 以此来解决键冲突（collision）的问题。  </p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs awk">typedef struct dict &#123;<br>    <span class="hljs-regexp">//</span> 和类型相关的处理函数<br>    dictType *type;<br>    <span class="hljs-regexp">//</span> 私有数据<br>    void *privdata;<br>    <span class="hljs-regexp">//</span> 哈希表<br>    dictht ht[<span class="hljs-number">2</span>];<br>    <span class="hljs-regexp">//</span> rehash 索引，当rehash不再进行时，值为-<span class="hljs-number">1</span><br>    long rehashidx; <span class="hljs-regexp">/* rehashing not in progress if rehashidx == -1 */</span><br>    <span class="hljs-regexp">//</span> 迭代器数量<br>    unsigned long iterators; <span class="hljs-regexp">/* number of iterators currently running */</span><br>&#125; dict;<br></code></pre></td></tr></table></figure>
+
+<p>ht属性是一个包含两个项的数组,数组中的每一个项都是一个dictht哈希表,一般情况下,字典只使用ht[0]哈希表,  ht[1]哈希表只会在ht[0]哈希表进行rehash时使用.  </p>
+<p><code>rehashidx</code>也是rehash相关的,rehash的操作不是瞬间完成的,rehashidx记录着rehash的进度,如果目前没有正在进行rehash,它的值为-1  </p>
+<h4 id="哈希算法"><a href="#哈希算法" class="headerlink" title="哈希算法"></a>哈希算法</h4><p>当将一个新的键值对插入到字典,需要重新计算索引值,redis计算索引的方法是:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-comment"># 使用字典设置的哈希函数，计算键 key 的哈希值</span><br><span class="hljs-attr">hash</span> = dict-&gt;type-&gt;hashFunction(key)<span class="hljs-comment">;</span><br><br><span class="hljs-comment"># 使用哈希表的 sizemask 属性和哈希值，计算出索引值</span><br><span class="hljs-comment"># 根据情况不同， ht[x] 可以是 ht[0] 或者 ht[1]</span><br><span class="hljs-attr">index</span> = hash &amp; dict-&gt;ht[x].sizemask<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>类似Java的HashMap,计算key的hash值,然后hash&amp;(len-1),而redis的sizemask就是size-1  </p>
+<h4 id="哈希冲突"><a href="#哈希冲突" class="headerlink" title="哈希冲突"></a>哈希冲突</h4><p>当出现hash冲突时,redis使用的是链地址法来解决冲突,链地址法就是将冲突的节点构成一个链表放在该索引位置上,redis采用的是头插法,解决hash冲突的还有三种方法.分别是:开放地址法, 开放定址法（线性探测再散列，二次探测再散列，伪随机探测再散列）、再哈希法以及建立一个公共溢出区  </p>
+<h4 id="rehash"><a href="#rehash" class="headerlink" title="rehash"></a>rehash</h4><p> 随着不断的操作，hash表中的键值对可能会增多或减少，为了让哈希表的负载因子保持在一个范围内，需要对 hash表进行扩容或收缩，收缩和扩容的过程就叫 rehash。rehash 过程如下：  </p>
+<ol>
+<li><p>为字典的 ht[1] 哈希表分配空间， 这个哈希表的空间大小取决于要执行的操作， 以及 ht[0] 当前包含的键值对数量 （也即是 ht[0].used 属性的值）  </p>
+<ul>
+<li> 如果执行的是扩展操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used * 2 的 2^n （2 的 n 次方幂） </li>
+<li> 如果执行的是收缩操作， 那么 ht[1] 的大小为第一个大于等于 ht[0].used 的 2^n </li>
+</ul>
+</li>
+<li><p>  将保存在 ht[0] 中的所有键值对 rehash 到 ht[1] 上面： rehash 指的是重新计算键的哈希值和索引  值， 然后将键值对放置到 ht[1] 哈希表的指定位置上 </p>
+</li>
+<li><p>  当 ht[0] 包含的所有键值对都迁移到了 ht[1] 之后 （ht[0] 变为空表）， 释放 ht[0] ， 将 ht[1] 设置为 ht[0] ,  并在 ht[1] 新创建一个空白哈希表， 为下一次 rehash 做准备 </p>
+</li>
+</ol>
+<h5 id="当以下条件中的任意一个被满足时，-程序会自动开始对哈希表执行扩展操作："><a href="#当以下条件中的任意一个被满足时，-程序会自动开始对哈希表执行扩展操作：" class="headerlink" title="当以下条件中的任意一个被满足时， 程序会自动开始对哈希表执行扩展操作："></a><strong>当以下条件中的任意一个被满足时， 程序会自动开始对哈希表执行扩展操作：</strong></h5><ul>
+<li>服务器目前没有在执行 BGSAVE 命令或者 BGREWRITEAOF 命令， 并且哈希表的负载因子大于等于 1 ；</li>
+<li>服务器目前正在执行 BGSAVE 命令或者 BGREWRITEAOF 命令， 并且哈希表的负载因子大于等于 5 ；<br>其中哈希表的负载因子可以通过公式：<code>load_factor = ht[0].used / ht[0].size</code>计算 ,比如说,对于一个大小为4,包含4个键值对的哈希表来说,这个哈希表的负载因子为:<code>load_factor=4/4=1</code></li>
+</ul>
+<p>根据BGSAVE命令或者BGREWRITEAOF命令是否正在执行,服务器执行扩展操作所需要的负载因子并不相同,这是因为在执行BGSAVE命令或BGREWRITEAOF命令过程中,Redis需要创建当前服务器的子进程,而大多数操作系统都是采用写时复制(copy-on-write)技术来优化子进程的使用效率,所以在子进程存在期间,服务器会提高执行扩展操作所需要的负载因子,从而尽可能的避免在子进程存在期间进行哈希表扩展操作,这样可以避免不必要的内存写入操作,最大程度的节约内存.  </p>
+<h4 id="渐进式rehash"><a href="#渐进式rehash" class="headerlink" title="渐进式rehash"></a>渐进式rehash</h4><p>当数据量大的时候一次性进行迁移会造成服务器在一段时间内定制服务,为了避免因为庞大的计算量导致服务器在一段时间内停止服务,redis采用渐进式将ht[0]键值对rehash到ht[1].  </p>
+<p> 以下是哈希表渐进式 rehash 的详细步骤： </p>
+<ol>
+<li> 为 ht[1] 分配空间， 让字典同时持有 ht[0] 和 ht[1] 两个哈希表 </li>
+<li> 在字典中维持一个索引计数器变量 rehashidx ， 并将它的值设置为 0  , 表示 rehash 工作正式开始 . </li>
+<li> 在rehash进行期间,每次对字典执行添加,删除,查找或者更新操作时,程序除了执行指定的操作外,还会顺带将ht[0]哈希表在rehashidx索引上的所有键值对rehash到ht[1].当rehash工作完成之后,程序将rehashidx属性的值加1.  </li>
+<li> 随着字典操作不断执行,最终在某个时间点上,ht[0]的所有键值对都会被rehash到ht[1],这时程序将rehashidx属性的值设为-1,表示rehash操作已经完成.  </li>
+</ol>
+<h2 id="跳跃表"><a href="#跳跃表" class="headerlink" title="跳跃表"></a>跳跃表</h2><p>跳跃表示一种有序数据结构,它通过在每个节点中维持指向其他节点的指针,从而达到快速访问节点的目的.  </p>
+<p>下面详细介绍跳跃表:  </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-19-22.png" srcset="/img/loading.gif" lazyload></p>
+<p>现在我们有个场景,想快速找到上图单链表中的这10歌元素,只能从头开始遍历,这样的查找效率很低,那么有没有提高查找效率的方法呢?如下图所示，我们从链表中每两个元素抽出来，加一级索引，一级索引指向了原始链表， 即：通过一级索引 7 的down指针可以找到原始链表的 7 。那现在怎么查找 10 这个元素呢  </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-23-24.png" srcset="/img/loading.gif" lazyload></p>
+<p>先在索引找1,4,7,9遍历到一级索引的9时,发现后继节点是13,比10大,于是不往下找了,而是通过9找到原始链表的9,然后再往后遍历找到了我们要找的10  </p>
+<p> 那如果加二级索引呢？如下图所示，查找路径：1、7、9、10。是不是找 10 的效率更高了？这就是跳表的思想，用“空间换时间”，通过给链表建立索引，提高了查找的效率。 </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-27-41.png" srcset="/img/loading.gif" lazyload></p>
+<p>当数据量足够大时，效率提升会很大。如下图所示，假如有序单链表现在有1万个元素，分别是 0~9999。现在我们建了很多级索引，最高级的索引，就两个元素 0、5000，次高级索引四个元素 0、2500、5000、7500，依次类推，当我们查找 7890 这个元素时，查找路径为 0、5000、7500 … 7890，通过最高级索引直接跳过了5000个元素，次高层索引直接跳过了2500个元素，<strong>从而使得链表能够实现二分查找</strong>。由此可以看出，当元素数量较多时，索引提高的效率比较大，近似于二分查找。  </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-29-05.png" srcset="/img/loading.gif" lazyload></p>
+<p>跳表是<strong>可以实现二分查找的有序链表</strong> </p>
+<p>更多跳表知识访问原链接:<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/9d8296562806">跳表</a></p>
+<p>redis只有在两个地方用到了跳跃表,一个是实现有序集合键,另一个是在集群节点中用作内部数据结构  </p>
+<p>redis的跳跃表由  redis.h/zskiplistNode 和 redis.h/zskiplist 两个结构定义，  其中 zskiplistNode 结构用于表示跳跃表节点， 而 zskiplist 结构则用于保存跳跃表节点的相关信息， 比如节点的数量， 以及指向表头节点和表尾节点的指针等  </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-39-26.png" srcset="/img/loading.gif" lazyload alt="redis跳跃表"></p>
+<p>上图展示了一个跳跃表示例,位于图片最左边的是zskiplist结构,该结构包含以下属性:  </p>
+<ul>
+<li>header ：指向跳跃表的表头节点。</li>
+<li>tail ：指向跳跃表的表尾节点。</li>
+<li>level ：记录目前跳跃表内，层数最大的那个节点的层数（表头节点的层数不计算在内）。</li>
+<li>length ：记录跳跃表的长度，也即是，跳跃表目前包含节点的数量（表头节点不计算在内）。</li>
+</ul>
+<p> 位于 zskiplist 结构右方的是四个 zskiplistNode 结构， 该结构包含以下属性： </p>
+<ul>
+<li>层（level）：节点中用 L1 、 L2 、 L3 等字样标记节点的各个层， L1 代表第一层， L2 代表第二层，以此类推。每个层都带有两个属性：前进指针和跨度。前进指针用于访问位于表尾方向的其他节点，而跨度则记录了前进指针所指向节点和当前节点的距离。在上面的图片中，连线上带有数字的箭头就代表前进指针，而那个数字就是跨度。当程序从表头向表尾进行遍历时，访问会沿着层的前进指针进行。  </li>
+<li>后退（backward）指针：节点中用 BW 字样标记节点的后退指针，它指向位于当前节点的前一个节点。后退指针在程序从表尾向表头遍历时使用。</li>
+<li>分值（score）：各个节点中的 1.0 、 2.0 和 3.0 是节点所保存的分值。在跳跃表中，节点按各自所保存的分值从小到大排列。</li>
+<li>成员对象（obj）：各个节点中的 o1 、 o2 和 o3 是节点所保存的成员对象。</li>
+</ul>
+<h5 id="跳跃表节点"><a href="#跳跃表节点" class="headerlink" title="跳跃表节点"></a>跳跃表节点</h5><p> 跳跃表节点的实现由 redis.h/zskiplistNode 结构定义： </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> &#123;</span><br><br>    <span class="hljs-comment">// 后退指针</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">backward</span>;</span><br><br>    <span class="hljs-comment">// 分值</span><br>    <span class="hljs-keyword">double</span> score;<br><br>    <span class="hljs-comment">// 成员对象</span><br>    robj *obj;<br><br>    <span class="hljs-comment">// 层</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistLevel</span> &#123;</span><br><br>        <span class="hljs-comment">// 前进指针</span><br>        <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">forward</span>;</span><br><br>        <span class="hljs-comment">// 跨度</span><br>        <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">int</span> span;<br><br>    &#125; level[];<br><br>&#125; zskiplistNode;<br></code></pre></td></tr></table></figure>
+
+<h5 id="层"><a href="#层" class="headerlink" title="层"></a>层</h5><p> 跳跃表节点的 level 数组可以包含多个元素， 每个元素都包含一个指向其他节点的指针， 程序可以通过这些层来加快访问其他节点的速度， 一般来说， 层的数量越多， 访问其他节点的速度就越快。 </p>
+<h5 id="跨度"><a href="#跨度" class="headerlink" title="跨度"></a>跨度</h5><p> 层的跨度（level[i].span 属性）用于记录两个节点之间的距离：  两个节点之间的跨度越大， 它们相距得就越远。 </p>
+<p> 初看上去， 很容易以为跨度和遍历操作有关， 但实际上并不是这样 —— 遍历操作只使用前进指针就可以完成了， 跨度实际上是用来计算排位（rank）的： 在查找某个节点的过程中， 将沿途访问过的所有层的跨度累计起来， 得到的结果就是目标节点在跳跃表中的排位。   </p>
+<p> 举个例子， 下图用虚线标记了在跳跃表中查找分值为 3.0 、 成员对象为 o3 的节点时， 沿途经历的层： 查找的过程只经过了一个层， 并且层的跨度为 3 ， 所以目标节点在跳跃表中的排位为 3 。 </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-49-59.png" srcset="/img/loading.gif" lazyload></p>
+<h5 id="后腿指针"><a href="#后腿指针" class="headerlink" title="后腿指针"></a>后腿指针</h5><p> 节点的后退指针（backward 属性）用于从表尾向表头方向访问节点： 跟可以一次跳过多个节点的前进指针不同， 因为每个节点只有一个后退指针， 所以每次只能后退至前一个节点。 </p>
+<h5 id="分值和对象"><a href="#分值和对象" class="headerlink" title="分值和对象"></a>分值和对象</h5><p> 节点的分值（score 属性）是一个 double 类型的浮点数， 跳跃表中的所有节点都按分值从小到大来排序。 </p>
+<p> 节点的成员对象（obj 属性）是一个指针， 它指向一个字符串对象， 而字符串对象则保存着一个 SDS 值。 </p>
+<p> 在同一个跳跃表中， 各个节点保存的成员对象必须是唯一的， 但是多个节点保存的分值却可以是相同的： 分值相同的节点将按照成员对象在字典序中的大小来进行排序， 成员对象较小的节点会排在前面（靠近表头的方向）， 而成员对象较大的节点则会排在后面（靠近表尾的方向）。  </p>
+<h5 id="zskiplist"><a href="#zskiplist" class="headerlink" title="zskiplist"></a>zskiplist</h5><p> 通过使用一个 zskiplist 结构来持有这些节点， 程序可以更方便地对整个跳跃表进行处理， 比如快速访问跳跃表的表头节点和表尾节点， 又或者快速地获取跳跃表节点的数量（也即是跳跃表的长度）等信息， 如下图所示。 </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_15-53-34.png" srcset="/img/loading.gif" lazyload></p>
+<p> zskiplist 结构的定义如下： </p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">typedef</span> <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplist</span> &#123;</span><br><br>    <span class="hljs-comment">// 表头节点和表尾节点</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">zskiplistNode</span> *<span class="hljs-title">header</span>, *<span class="hljs-title">tail</span>;</span><br><br>    <span class="hljs-comment">// 表中节点的数量</span><br>    <span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">long</span> length;<br><br>    <span class="hljs-comment">// 表中层数最大的节点的层数</span><br>    <span class="hljs-keyword">int</span> level;<br><br>&#125; zskiplist;<br></code></pre></td></tr></table></figure>
+
+<p> header 和 tail 指针分别指向跳跃表的表头和表尾节点， 通过这两个指针， 程序定位表头节点和表尾节点的复杂度为 O(1) 。 </p>
+<p> 通过使用 length 属性来记录节点的数量， 程序可以在 O(1) 复杂度内返回跳跃表的长度。 </p>
+<h2 id="整数集合"><a href="#整数集合" class="headerlink" title="整数集合"></a>整数集合</h2><p>整数集合是集合(set)键的底层实现, 当一个集合只包含整数值元素， 并且这个集合的元素数量不多时， Redis 就会使用整数集合作为集合键的底层实现。 </p>
+<p> 举个例子， 如果我们创建一个只包含五个元素的集合键， 并且集合中的所有元素都是整数值， 那么这个集合键的底层实现就会是整数集合： </p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">redis&gt; SADD numbers <span class="hljs-number">1</span> <span class="hljs-number">3</span> <span class="hljs-number">5</span> <span class="hljs-number">7</span> <span class="hljs-number">9</span><br>(<span class="hljs-type">integer</span>) <span class="hljs-number">5</span><br><br>redis&gt; <span class="hljs-keyword">OBJECT</span> <span class="hljs-keyword">ENCODING</span> numbers<br>&quot;intset&quot;<br></code></pre></td></tr></table></figure>
+
+<p> 整数集合（intset）是 Redis 用于保存整数值的集合抽象数据结构， 它可以保存类型为 int16_t 、 int32_t 或者 int64_t 的整数值， 并且保证集合中不会出现重复元素。 </p>
+<p> 每个 intset.h/intset 结构表示一个整数集合： </p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs angelscript"><span class="hljs-keyword">typedef</span> struct <span class="hljs-built_in">int</span><span class="hljs-keyword">set</span> &#123;<br><br>    <span class="hljs-comment">// 编码方式</span><br>    <span class="hljs-built_in">uint</span>32_t encoding;<br><br>    <span class="hljs-comment">// 集合包含的元素数量</span><br>    <span class="hljs-built_in">uint</span>32_t length;<br><br>    <span class="hljs-comment">// 保存元素的数组</span><br>    <span class="hljs-built_in">int</span>8_t contents[];<br><br>&#125; <span class="hljs-built_in">int</span><span class="hljs-keyword">set</span>;<br></code></pre></td></tr></table></figure>
+
+<p> contents 数组是整数集合的底层实现： 整数集合的每个元素都是 contents 数组的一个数组项（item）， 各个项在数组中按值的大小从小到大有序地排列， 并且数组中不包含任何重复项。   </p>
+<p> length 属性记录了整数集合包含的元素数量， 也即是 contents 数组的长度。 </p>
+<p> 虽然 intset 结构将 contents 属性声明为 int8_t 类型的数组， 但实际上 contents 数组并不保存任何 int8_t 类型的值 —— contents 数组的真正类型取决于 encoding 属性的值：如果 encoding 属性的值为 INTSET_ENC_INT16 ， 那么 contents 就是一个 int16_t 类型的数组， 数组里的每个项都是一个 int16_t 类型的整数值 （最小值为 -32,768 ，最大值为 32,767 ）。   </p>
+<p> 下图是一个包含五个int16_t类型整数值的整数集合。   </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_16-04-00.png" srcset="/img/loading.gif" lazyload></p>
+<p>每当我们要将一个新元素添加到整数集合里面,并且新元素的类型比整数集合现有的所有元素的类型都要长时,整数集合需要先进行升级,然后才能将新元素添加到整数集合里面.  </p>
+<p>升级整数集合并添加新元素分为三步进行:  </p>
+<ul>
+<li>根据新元素的类型,扩展整数集合底层数组的空间大小,并为新元素分配空间  </li>
+<li>将底层数组现有的所有元素都转换成与新元素相同的类型,并将类型转换后的元素放置到正确的位置上,而且在放置元素的过程中,需要维持底层数组的有序性质不变.  </li>
+<li>将新元素添加到底层数组里面.  </li>
+</ul>
+<p>整数集合不支持降级操作,一旦对数组进行了升级,编码就会一直保持升级后的状态.  </p>
+<h2 id="压缩列表"><a href="#压缩列表" class="headerlink" title="压缩列表"></a>压缩列表</h2><p> 压缩列表（ziplist）是列表键和哈希键的底层实现之一。 </p>
+<p> 当一个列表键只包含少量列表项， 并且每个列表项要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做列表键的底层实现。 </p>
+<p> 比如说， 执行以下命令将创建一个压缩列表实现的列表键： </p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">redis&gt; RPUSH lst <span class="hljs-number">1</span> <span class="hljs-number">3</span> <span class="hljs-number">5</span> <span class="hljs-number">10086</span> &quot;hello&quot; &quot;world&quot;<br>(<span class="hljs-type">integer</span>) <span class="hljs-number">6</span><br><br>redis&gt; <span class="hljs-keyword">OBJECT</span> <span class="hljs-keyword">ENCODING</span> lst<br>&quot;ziplist&quot;<br></code></pre></td></tr></table></figure>
+
+<p> 因为列表键里面包含的都是 1 、 3 、 5 、 10086 这样的小整数值， 以及 “hello” 、 “world” 这样的短字符串。 </p>
+<p> 另外， 当一个哈希键只包含少量键值对， 并且每个键值对的键和值要么就是小整数值， 要么就是长度比较短的字符串， 那么 Redis 就会使用压缩列表来做哈希键的底层实现。 </p>
+<p> 举个例子， 执行以下命令将创建一个压缩列表实现的哈希键： </p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs pf">redis&gt; HMSET <span class="hljs-keyword">profile</span> <span class="hljs-string">&quot;name&quot;</span> <span class="hljs-string">&quot;Jack&quot;</span> <span class="hljs-string">&quot;age&quot;</span> <span class="hljs-number">28</span> <span class="hljs-string">&quot;job&quot;</span> <span class="hljs-string">&quot;Programmer&quot;</span><br>OK<br><br>redis&gt; OBJECT ENCODING <span class="hljs-keyword">profile</span><br><span class="hljs-string">&quot;ziplist&quot;</span><br></code></pre></td></tr></table></figure>
+
+<h5 id="压缩列表的构成"><a href="#压缩列表的构成" class="headerlink" title="压缩列表的构成"></a>压缩列表的构成</h5><p> 压缩列表是 Redis 为了节约内存而开发的， 由一系列特殊编码的连续内存块组成的顺序型（sequential）数据结构。  一个压缩列表可以包含任意多个节点（entry）， 每个节点可以保存一个字节数组或者一个整数值。 </p>
+<p> 下图展示了压缩列表的各个组成部分。 </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_16-14-48.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li> zlbytes:  记录整个压缩列表占用的内存字节数：在对压缩列表进行内存重分配， 或者计算 zlend 的位置时使用。 </li>
+<li> zltail : 记录压缩列表表尾节点距离压缩列表的起始地址有多少字节： 通过这个偏移量，程序无须遍历整个压缩列表就可以确定表尾节点的地址。 </li>
+<li> zllen :  记录了压缩列表包含的节点数量： 当这个属性的值小于 UINT16_MAX （65535）时， 这个属性的值就是压缩列表包含节点的数量； 当这个值等于 UINT16_MAX 时， 节点的真实数量需要遍历整个压缩列表才能计算得出。 </li>
+<li> entryX :  压缩列表包含的各个节点，节点的长度由节点保存的内容决定。 </li>
+<li> zlend:  特殊值 0xFF （十进制 255 ），用于标记压缩列表的末端。 </li>
+</ul>
+<h5 id="压缩列表节点的构成"><a href="#压缩列表节点的构成" class="headerlink" title="压缩列表节点的构成"></a>压缩列表节点的构成</h5><p> 每个压缩列表节点都由 previous_entry_length 、 encoding 、 content 三个部分组成， 如下图所示。 </p>
+<p><img src="http://oss.xiaokoua.cn//Snipaste_2021-10-31_16-17-17.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>节点的 previous_entry_length 属性以字节为单位， 记录了压缩列表中前一个节点的长度。</li>
+<li>节点的 encoding 属性记录了节点的 content 属性所保存数据的类型以及长度</li>
+<li> 节点的 content 属性负责保存节点的值， 节点值可以是一个字节数组或者整数， 值的类型和长度由节点的 encoding 属性决定。 </li>
+<li>压缩列表是一种为节约内存而开发的顺序型数据结构。</li>
+<li>压缩列表被用作列表键和哈希键的底层实现之一。</li>
+<li>压缩列表可以包含多个节点，每个节点可以保存一个字节数组或者整数值。</li>
+<li>添加新节点到压缩列表， 或者从压缩列表中删除节点， 可能会引发连锁更新操作， 但这种操作出现的几率并不高。</li>
+</ul>
+
             </div>
             <hr>
             <div>
