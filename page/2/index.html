@@ -176,6 +176,55 @@
     
     
       <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/10/24/Buffer-Pool/" target="_self">
+          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="Buffer Pool">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/10/24/Buffer-Pool/" target="_self">
+          Buffer Pool
+        </a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/10/24/Buffer-Pool/" target="_self">
+          
+          
+            
+          
+          Buffer Pool如何调节磁盘与CPU的矛盾? 数据存放在表空间的页中,是存储在磁盘上,但是磁盘的速度很慢,所以数据库在处理数据时会把数据加载到内存中,当需要访问某个页的数据时,就会把完整的页全部加载到内存中,也就是说即使我们只需要访问一个页的一条记录,那也需要先把完整的页数据加载到内存中.  在进行完读写访问之后并不着急把该页对应的内存空间释放掉,而是将其缓存起来,这样将来再有请求访问该页面
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-10-24 15:07" pubdate>
+              2021-10-24
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/mysql/">mysql</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+      <div class="col-12 col-md-4 m-auto index-img">
         <a href="/2021/10/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1/" target="_self">
           <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="数据库事务">
         </a>
@@ -616,58 +665,6 @@ RDBRDB持久化是把当前进程数据生成快照保存到硬盘的过程,触�
             <i class="iconfont icon-category"></i>
             
               <a href="/categories/Redis/">Redis</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-      <div class="col-12 col-md-4 m-auto index-img">
-        <a href="/2021/10/24/synchronized/" target="_self">
-          <img src="https://199794.oss-cn-shanghai.aliyuncs.com/blog//2019-04-22%20135447_gaitubao_1600x900_1604366529483.jpg" srcset="/img/loading.gif" lazyload alt="synchronized">
-        </a>
-      </div>
-    
-    <article class="col-12 col-md-8 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/10/24/synchronized/" target="_self">
-          synchronized
-        </a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/10/24/synchronized/" target="_self">
-          
-          
-            
-          
-          Synchronized原子性所谓原子性就是指一个操作或者多个操作,要么全部执行并且执行的过程不会被任何因素打断,要么就都不执行 
-注意:synchronized和volatile特性的最大区别在于原子性,volatile不具备原子性  
-Synchronized使用Synchroniezd可以在静态方法,成员方法,成员对象属性上使用,归根结底它上锁的资源只有两类:一个是对象,一个是类.   
-同
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-10-24 14:56" pubdate>
-              2021-10-24
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/%E5%B9%B6%E5%8F%91/">并发</a>
             
           </div>
         
